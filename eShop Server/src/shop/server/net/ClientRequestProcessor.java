@@ -6,10 +6,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.Vector;
 
+import shop.common.exceptions.KundeExistiertBereitsException;
+import shop.common.exceptions.MitarbeiterExistiertBereitsException;
+import shop.common.exceptions.MitarbeiterExistiertNichtException;
+import shop.common.exceptions.UsernameExistiertBereitsException;
 import shop.common.interfaces.ShopInterface;
 import shop.common.valueobjects.Kunde;
 import shop.common.valueobjects.Mitarbeiter;
+import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.common.valueobjects.Person;
 
 /**
@@ -97,6 +104,20 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("pl")) {
 				pruefeLogin();
 			}
+			else if (input.equals("ke")) {
+				fuegeKundenHinzu();
+			} 
+			else if (input.equals("mf")){
+				sucheMitarbeiter();
+			}else if (input.equals("ma")){
+				gibAlleMitarbeiter();
+			}else if (input.equals("me")){
+				fuegeMitarbeiterHinzu();
+			}else if (input.equals("mb")){
+				mitarbeiterBearbeiten();
+			}else if (input.equals("ml")){
+				mitarbeiterLoeschen();
+			}
 			/*else if (input.equals("a")) {
 				// Aktion "Bücher _a_usgeben" gewählt
 				ausgeben();
@@ -119,6 +140,80 @@ class ClientRequestProcessor implements Runnable {
 
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
+	}
+	
+	private void fuegeKundenHinzu() {
+		String input = null;
+		String ergebnis = null;
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String username = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String passwort = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String name = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strasse = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strPlz = new String(input);
+		int plz = Integer.parseInt(strPlz);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String wohnort = new String(input);
+		
+		try {
+			shop.fuegeKundenHinzu(username, passwort, name, strasse, plz, wohnort);
+			try {
+				shop.schreibeKunden();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ergebnis = "kee";
+		} catch (KundeExistiertBereitsException e) {
+			ergebnis = "keb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UsernameExistiertBereitsException e) {
+			ergebnis = "ueb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(ergebnis);
 	}
 	
 	private void pruefeLogin() {
@@ -278,6 +373,113 @@ class ClientRequestProcessor implements Runnable {
 			System.out.println(e.getMessage());
 			out.println("Fehler");
 		}
+	}
+	
+	////////Mitarbeiter ////////
+
+	private void sucheMitarbeiter(){
+		String input = null;
+		Mitarbeiter m = null;
+
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Mitarbeiter ID): ");
+			System.out.println(e.getMessage());
+		}
+		int id = new Integer(input);
+
+		try {
+			m = shop.sucheMitarbeiter(id);
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNicht");
+		}
+
+		if(m != null){
+			sendeMitarbeiter(m);
+		}
+
+	}
+
+	private void gibAlleMitarbeiter(){
+		Vector<Mitarbeiter> mitarbeiterListe = null;
+
+		mitarbeiterListe = shop.gibAlleMitarbeiter();
+		Iterator<Mitarbeiter> iter = mitarbeiterListe.iterator();
+
+		out.println(mitarbeiterListe.size());
+		while(iter.hasNext()){
+			sendeMitarbeiter(iter.next());
+		}
+	}
+
+	private void fuegeMitarbeiterHinzu(){
+		try{
+			String username = in.readLine();
+			String passwort = in.readLine();
+			String name = in.readLine();
+			MitarbeiterFunktion funktion = MitarbeiterFunktion.valueOf(in.readLine());
+			double gehalt = Double.parseDouble(in.readLine());
+			shop.fuegeMitarbeiterHinzu(username, passwort, name, funktion, gehalt);
+			out.println("OK");
+		} catch (MitarbeiterExistiertBereitsException e) {
+			out.println("MitarbeiterExistiertBereits");
+		} catch (UsernameExistiertBereitsException e) {
+			out.println("UsernameExistiertBereits");
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Lesen vom Client (fuegeMitarbeiterHinzu): ");
+			System.out.println(e.getMessage());
+		} 
+
+	}
+
+	private void mitarbeiterBearbeiten(){
+		try{
+			int id = Integer.parseInt(in.readLine());
+			Mitarbeiter m = shop.sucheMitarbeiter(id);
+			// Empfangen der Daten
+			String passwort = in.readLine();
+			String name = in.readLine();
+			MitarbeiterFunktion funktion = MitarbeiterFunktion.valueOf(in.readLine());
+			double gehalt = Double.parseDouble(in.readLine());
+			boolean blockiert = Boolean.valueOf(in.readLine());
+			// Speicheren der Daten
+			m.setPasswort(passwort);
+			m.setName(name);
+			m.setFunktion(funktion);
+			m.setGehalt(gehalt);
+			m.setBlockiert(blockiert);
+
+			out.println("OK");
+		} catch (MitarbeiterExistiertNichtException e){ 
+			out.println("MitarbeiterExistiertNicht");
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterBearbeiten): ");
+			System.out.println(e.getMessage());
+		} 
+	}
+
+	private void mitarbeiterLoeschen(){
+		try {
+			int id = Integer.parseInt(in.readLine());
+			Mitarbeiter m = shop.sucheMitarbeiter(id);
+			shop.mitarbeiterLoeschen(m);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Loeschen von Mitarbeiter: ");
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void sendeMitarbeiter(Mitarbeiter m){
+		out.println(m.getId());
+		out.println(m.getUsername());
+		out.println(m.getPasswort());
+		out.println(m.getFunktion());
+		out.println(m.getGehalt());
+		out.println(m.getBlockiert());
 	}
 	
 }
