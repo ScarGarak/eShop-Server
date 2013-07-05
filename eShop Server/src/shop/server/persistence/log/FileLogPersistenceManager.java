@@ -86,7 +86,7 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 
 			String str = null;
 
-			// Gehe von Zeile zur Zeile bis die eingelsene Zeile leer ist
+			// Gehe von Zeile zur Zeile bis die eingelesene Zeile leer ist
 			// oder der variablen "zeile" entspricht
 			while ((str = reader.readLine()) != null && !str.equals(zeile)); 
 
@@ -98,6 +98,48 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 				}while ((str = reader.readLine()) != null);
 			}
 
+			close();
+
+			//Lösche das Original
+			if (!original.delete()) {
+				System.err.println("Löschen des originals fehlgeschlagen!");
+				return false;
+			}
+
+			//Gib der temporären Datei, den Namen des originals
+			if (!tmp.renameTo(original))
+				System.err.println("Umbenennen der temporären Datei fehlgeschlagen!");
+
+		} catch (FileNotFoundException e) {
+			System.err.println("Datei nicht gefunden!");
+			System.err.println(e.getMessage());
+		}
+		
+		return true;
+	}
+	
+	public boolean entferneArtikelAusLog(String id, String dateiname) throws IOException{
+		try {
+
+			File original = new File(dateiname);
+			File tmp = new File(original.getAbsolutePath() + ".tmp");
+
+			// eigenes Bilden von Reader und Writer, da hier File Objekte übergeben werden,
+			// die wir zum Löschen, respkt. umbenennen der Dateien brauchen
+			reader = new BufferedReader(new FileReader(original));
+			writer = new PrintWriter(new FileWriter(tmp));
+
+			String str = null;
+
+			// Gehe von Zeile zur Zeile bis die eingelesene Zeile leer ist
+			// und schreibe nur die Zeilen, die nicht die ID beherbergen
+			while ((str = reader.readLine()) != null){ 
+				if(!str.contains(id)){
+					// Schreibe den String in die temporäre Datei
+					writer.println(str);
+					writer.flush();
+				}
+			}
 			close();
 
 			//Lösche das Original

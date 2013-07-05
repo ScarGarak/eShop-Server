@@ -85,7 +85,7 @@ public class ArtikelVerwaltung {
 			throw new ArtikelExistiertBereitsException(artikel, " - in 'einfuegen()'");
 	}
 	
-	public void bestandErhoehen(int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+	public void bestandVeraendern(int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		int index = -1;
 
 		Iterator<Artikel> iter = artikelBestand.iterator();
@@ -96,7 +96,7 @@ public class ArtikelVerwaltung {
 		}
 		
 		if (index != -1) {
-			artikelBestand.get(index).setBestand(artikelBestand.get(index).getBestand() + Math.abs(anzahl));
+			artikelBestand.get(index).setBestand(artikelBestand.get(index).getBestand() + anzahl);
 		} else 
 			throw new ArtikelExistiertNichtException(artikelnummer, " - in 'bestandErhoehen()'");
 	}

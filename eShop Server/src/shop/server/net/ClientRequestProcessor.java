@@ -8,6 +8,9 @@ import java.io.PrintStream;
 import java.net.Socket;
 
 import shop.common.interfaces.ShopInterface;
+import shop.common.valueobjects.Kunde;
+import shop.common.valueobjects.Mitarbeiter;
+import shop.common.valueobjects.Person;
 
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
@@ -91,6 +94,9 @@ class ClientRequestProcessor implements Runnable {
 				// Einfach behandeln wie ein "quit"
 				input = "q";
 			}
+			else if (input.equals("pl")) {
+				pruefeLogin();
+			}
 			/*else if (input.equals("a")) {
 				// Aktion "Bücher _a_usgeben" gewählt
 				ausgeben();
@@ -113,6 +119,50 @@ class ClientRequestProcessor implements Runnable {
 
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
+	}
+	
+	private void pruefeLogin() {
+		String input = null;
+		
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Username): ");
+			System.out.println(e.getMessage());
+		}
+		String username = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Password): ");
+			System.out.println(e.getMessage());
+		}
+		String password = new String(input);
+
+		Person p = shop.pruefeLogin(username, password);
+		if (p != null) {
+			sendePersonAnClient(p);
+		}
+	}
+	
+	private void sendePersonAnClient(Person p) {
+		out.println(p.getPersonTyp());
+		out.println(p.getId());
+		out.println(p.getName());
+		switch(p.getPersonTyp()) {
+			case Kunde: 
+				out.println(((Kunde) p).getStrasse());
+				out.println(((Kunde) p).getPlz());
+				out.println(((Kunde) p).getWohnort());
+				break;
+			case Mitarbeiter: 
+				out.println(((Mitarbeiter) p).getFunktion());
+				out.println(((Mitarbeiter) p).getGehalt());
+				break;
+			default: 
+				break;
+		}
 	}
 	
 	/*

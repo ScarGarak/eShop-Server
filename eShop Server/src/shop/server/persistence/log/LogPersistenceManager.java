@@ -40,4 +40,6 @@ public interface LogPersistenceManager {
 	
 	public boolean cleanLogdatei(String zeile, String dateiname) throws IOException;
 	
+	public boolean entferneArtikelAusLog(String id, String dateiname) throws IOException;
+	
 }
