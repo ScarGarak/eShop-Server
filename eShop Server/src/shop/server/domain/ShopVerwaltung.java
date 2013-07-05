@@ -81,12 +81,14 @@ public class ShopVerwaltung implements ShopInterface{
 	public void fuegeArtikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int bestand) throws ArtikelExistiertBereitsException {
 		Artikel artikel = new Artikel(artikelnummer, bezeichnung, preis, bestand);
 		meineArtikel.einfuegen(artikel);
+		
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
 	public void fuegeMassengutartikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int packungsgroesse, int bestand) throws ArtikelExistiertBereitsException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		Massengutartikel artikel = new Massengutartikel(artikelnummer, bezeichnung, preis, packungsgroesse, bestand);
 		meineArtikel.einfuegen(artikel);
+		
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
@@ -94,7 +96,7 @@ public class ShopVerwaltung implements ShopInterface{
 		return meineArtikel.getArtikel(artikelnummer);
 	}
 	
-	public void artikelBestandErhoehen(Mitarbeiter mitarbeiter, int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, IOException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+	public void artikelBestandVeraendern(Mitarbeiter mitarbeiter, int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineArtikel.bestandVeraendern(artikelnummer, anzahl);
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), gibArtikel(artikelnummer), anzahl, mitarbeiter));
 	}
@@ -114,7 +116,7 @@ public class ShopVerwaltung implements ShopInterface{
 	public List<Artikel> sucheArtikel(String bezeichnung) {
 		return meineArtikel.sucheArtikel(bezeichnung); 
 	}
-	
+
 	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException {
 		Artikel artikel = gibArtikel(artikelnummer);
 		artikel.setPreis(preis);
@@ -332,6 +334,20 @@ public class ShopVerwaltung implements ShopInterface{
 		meineKunden.leeren(k);
 	}
 	
+	public Kunde loginVergessen(String name, String strasse, int zip, String wohnort){
+		Kunde result = null;
+		Iterator<Kunde> itK = meineKunden.getKundenListe().iterator();
+		while(itK.hasNext()){
+			Kunde k = itK.next();
+			if(k.getName().equals(name) && k.getStrasse().equals(strasse) && k.getPlz() == zip && k.getWohnort().equals(wohnort)){
+				result = k;
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Methode zur überprüfung des Logins auf basis des Usernamens und des Passwortes
 	 * @param username
@@ -381,22 +397,6 @@ public class ShopVerwaltung implements ShopInterface{
 	public void disconnect() throws IOException {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void artikelBestandVeraendern(Mitarbeiter mitarbeiter,
-			int artikelnummer, int anzahl)
-			throws ArtikelExistiertNichtException,
-			ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Kunde loginVergessen(String name, String strasse, int zip,
-			String wohnort) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 }
