@@ -142,6 +142,7 @@ class ClientRequestProcessor implements Runnable {
 		disconnect();		
 	}
 	
+	
 	private void fuegeKundenHinzu() {
 		String input = null;
 		String ergebnis = null;
