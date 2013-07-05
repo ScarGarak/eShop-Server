@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 
+import shop.common.exceptions.KundeExistiertBereitsException;
+import shop.common.exceptions.UsernameExistiertBereitsException;
 import shop.common.interfaces.ShopInterface;
 import shop.common.valueobjects.Kunde;
 import shop.common.valueobjects.Mitarbeiter;
@@ -97,6 +99,9 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("pl")) {
 				pruefeLogin();
 			}
+			else if (input.equals("ke")) {
+				fuegeKundenHinzu();
+			}
 			/*else if (input.equals("a")) {
 				// Aktion "Bücher _a_usgeben" gewählt
 				ausgeben();
@@ -119,6 +124,80 @@ class ClientRequestProcessor implements Runnable {
 
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
+	}
+	
+	private void fuegeKundenHinzu() {
+		String input = null;
+		String ergebnis = null;
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String username = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String passwort = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String name = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strasse = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strPlz = new String(input);
+		int plz = Integer.parseInt(strPlz);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String wohnort = new String(input);
+		
+		try {
+			shop.fuegeKundenHinzu(username, passwort, name, strasse, plz, wohnort);
+			try {
+				shop.schreibeKunden();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ergebnis = "kee";
+		} catch (KundeExistiertBereitsException e) {
+			ergebnis = "keb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UsernameExistiertBereitsException e) {
+			ergebnis = "ueb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(ergebnis);
 	}
 	
 	private void pruefeLogin() {
