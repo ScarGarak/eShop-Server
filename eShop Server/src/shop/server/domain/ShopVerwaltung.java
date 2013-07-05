@@ -35,10 +35,10 @@ import shop.common.valueobjects.WarenkorbArtikel;
  */
 public class ShopVerwaltung implements ShopInterface{
 	
-	private String artikelDateiname = "SHOP_A.ser";
-	private String mitarbeiterDateiname = "SHOP_M.ser";
-	private String kundenDateiname = "SHOP_K.ser";
-	private String logDateiname = "EinAuslagerung.log";
+	private String artikelDateiname = "eShop Server/SHOP_A.ser";
+	private String mitarbeiterDateiname = "eShop Server/SHOP_M.ser";
+	private String kundenDateiname = "eShop Server/SHOP_K.ser";
+	private String logDateiname = "eShop Server/EinAuslagerung.log";
 
 	private ArtikelVerwaltung meineArtikel;
 	private MitarbeiterVerwaltung meineMitarbeiter;
