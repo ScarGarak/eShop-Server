@@ -116,16 +116,15 @@ public class ShopVerwaltung implements ShopInterface{
 	public List<Artikel> sucheArtikel(String bezeichnung) {
 		return meineArtikel.sucheArtikel(bezeichnung); 
 	}
-	
-	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException{
-		Artikel a = gibArtikel(artikelnummer);
-		a.setPreis(preis);
-		a.setBezeichnung(bezeichnung);
+
+	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException {
+		Artikel artikel = gibArtikel(artikelnummer);
+		artikel.setPreis(preis);
+		artikel.setBezeichnung(bezeichnung);
 	}
 	
-	public void entferneArtikel(Mitarbeiter m, int artikelnummer) throws ArtikelExistiertNichtException, IOException{
+	public void entferneArtikel(Mitarbeiter mitarbeiter, int artikelnummer) throws ArtikelExistiertNichtException, IOException {
 		meineEreignisse.entferneArtikelAusLog(artikelnummer, logDateiname);
-		
 		meineArtikel.entfernen(artikelnummer);
 	}
 	
