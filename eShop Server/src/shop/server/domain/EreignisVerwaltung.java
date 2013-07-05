@@ -5,7 +5,7 @@ package shop.server.domain;
  * Aus- oder Einlagerung eines Artikels. Diese Verwaltung stellt mehrere Methoden zur
  * Verwaltung von der Logdatei zur Verfügung.
  * 
- *  @author Migliosi Angelo
+ *  @autho Migliosi Angelo
  */
 
 import java.io.IOException;
@@ -30,6 +30,7 @@ public class EreignisVerwaltung {
 	private LogPersistenceManager lpm = new FileLogPersistenceManager();
 	
 	private Hashtable<Integer, Vector<String[]>> bestandsHistorieListe;	// Wenn man eine Artikel ID angibt, bekommt man dessen Bestandshistorie
+	
 	
 	/**
 	 * Diese Methode schreibt die Ereignisse in der Ereignisliste in die Logdatei
@@ -277,7 +278,11 @@ public class EreignisVerwaltung {
 	private void fuegeVorgeschichteHinzu(Vector<String[]> bestandsHistorie){
 		try {
 			Calendar datum = Calendar.getInstance();
-			datum.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(bestandsHistorie.get(0)[0]));
+			if(bestandsHistorie.size() == 0){
+				datum.setTime(new Date());
+			}else{
+				datum.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(bestandsHistorie.get(0)[0]));
+			}
 			
 			while(bestandsHistorie.size() < 30){
 				datum.add(Calendar.DAY_OF_MONTH, -1);
@@ -398,7 +403,7 @@ public class EreignisVerwaltung {
 		lpm.openForReading(dateiname);
 		String zeile = "";
 		
-		// Suche nachd er ersten Zeile die nicht älter als 30 Tage ist
+		// Suche nach der ersten Zeile die nicht älter als 30 Tage ist
 		while(!(zeile = lpm.ladeEinAuslagerung()).equals("")){
 			String[] tokens = zeile.split(" ");
 			if(istDatumGueltig(tokens[0]+" "+tokens[1])){
@@ -410,6 +415,17 @@ public class EreignisVerwaltung {
 		
 		// Löschen aller Zeilen, die sich vor der gefundenen Zeile befinden
 		lpm.cleanLogdatei(zeile, dateiname);
+	}
+	
+	/**
+	 * Dies Methode entfernt ale Eintraege eines Artikels aus der Log Datei um damit
+	 * die Probleme zu verhindern, wenn dessen ID nochmals benutzt wird.
+	 * @param a Artikel zum entfernen
+	 * @param dateiname Name der Logdatei
+	 * @throws IOException
+	 */
+	public void entferneArtikelAusLog(int artikelnummer, String dateiname) throws IOException{
+		lpm.entferneArtikelAusLog(artikelnummer+"", dateiname);
 	}
 	
 	/**

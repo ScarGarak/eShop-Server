@@ -33,33 +33,45 @@ import shop.common.valueobjects.WarenkorbArtikel;
  * @author Christof Ferreira Torres, Angelo Migliosi & Oliver Thummerer
  * @version 1.0.0
  */
-public class ShopVerwaltung implements ShopInterface {
+public class ShopVerwaltung implements ShopInterface{
+	
+	private String artikelDateiname = "SHOP_A.ser";
+	private String mitarbeiterDateiname = "SHOP_M.ser";
+	private String kundenDateiname = "SHOP_K.ser";
+	private String logDateiname = "EinAuslagerung.log";
 
 	private ArtikelVerwaltung meineArtikel;
 	private MitarbeiterVerwaltung meineMitarbeiter;
 	private KundenVerwaltung meineKunden;
 	private EreignisVerwaltung meineEreignisse;
 	
+	private int mitarbeiterNextId;
+	private int kundenNextId;
+	
 	/**
-	 * Konstruktor, der die Basisdaten (Artikel, Kunden, Mitarbeiter) aus Dateien einliest
+	 * Konstruktor, der die Basisdaten (Artikel, Mitarbeiter, Kunden) aus Dateien einliest
 	 * (Initialisierung des Shops).
 	 * 
 	 * Namensmuster fŸr Dateien:
 	 *   "SHOP_A.ser" ist die Datei der Artikel
-	 *   "SHOP_K.ser" ist die Datei der Kunden
 	 *   "SHOP_M.ser" ist die Datei der Mitarbeiter
+	 *   "SHOP_K.ser" ist die Datei der Kunden
 	 *   
 	 * @throws IOException, z.B. wenn eine der Dateien nicht existiert.
+	 * @throws ArtikelExistiertBereitsException 
+	 * @throws ClassNotFoundException 
 	 */
 	public ShopVerwaltung() throws IOException {
 		meineArtikel = new ArtikelVerwaltung();
-		meineArtikel.liesDaten("SHOP_A.ser");
-		
-		meineKunden = new KundenVerwaltung();
-		meineKunden.liesDaten("SHOP_K.ser");
+		meineArtikel.liesDaten(artikelDateiname);
 		
 		meineMitarbeiter = new MitarbeiterVerwaltung();
-		meineMitarbeiter.liesDaten("SHOP_M.ser");
+		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
+		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
+		
+		meineKunden = new KundenVerwaltung();
+		meineKunden.liesDaten(kundenDateiname);
+		kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
 		
 		meineEreignisse = new EreignisVerwaltung();
 	}
@@ -69,12 +81,14 @@ public class ShopVerwaltung implements ShopInterface {
 	public void fuegeArtikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int bestand) throws ArtikelExistiertBereitsException {
 		Artikel artikel = new Artikel(artikelnummer, bezeichnung, preis, bestand);
 		meineArtikel.einfuegen(artikel);
+		
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
 	public void fuegeMassengutartikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int packungsgroesse, int bestand) throws ArtikelExistiertBereitsException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		Massengutartikel artikel = new Massengutartikel(artikelnummer, bezeichnung, preis, packungsgroesse, bestand);
 		meineArtikel.einfuegen(artikel);
+		
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
@@ -82,8 +96,8 @@ public class ShopVerwaltung implements ShopInterface {
 		return meineArtikel.getArtikel(artikelnummer);
 	}
 	
-	public void artikelBestandErhoehen(Mitarbeiter mitarbeiter, int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, IOException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
-		meineArtikel.bestandErhoehen(artikelnummer, anzahl);
+	public void artikelBestandVeraendern(Mitarbeiter mitarbeiter, int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+		meineArtikel.bestandVeraendern(artikelnummer, anzahl);
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), gibArtikel(artikelnummer), anzahl, mitarbeiter));
 	}
 	
@@ -103,9 +117,15 @@ public class ShopVerwaltung implements ShopInterface {
 		return meineArtikel.sucheArtikel(bezeichnung); 
 	}
 	
-	public void entferneArtikel(Mitarbeiter mitarbeiter, int artikelnummer) throws ArtikelExistiertNichtException {
-		Artikel artikel = gibArtikel(artikelnummer);
-		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, -artikel.getBestand(), mitarbeiter));
+	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException{
+		Artikel a = gibArtikel(artikelnummer);
+		a.setPreis(preis);
+		a.setBezeichnung(bezeichnung);
+	}
+	
+	public void entferneArtikel(Mitarbeiter m, int artikelnummer) throws ArtikelExistiertNichtException, IOException{
+		meineEreignisse.entferneArtikelAusLog(artikelnummer, logDateiname);
+		
 		meineArtikel.entfernen(artikelnummer);
 	}
 	
@@ -115,7 +135,7 @@ public class ShopVerwaltung implements ShopInterface {
 	 * @throws IOException
 	 */
 	public void schreibeArtikel() throws IOException {
-		meineArtikel.schreibeDaten("SHOP_A.ser");
+		meineArtikel.schreibeDaten(artikelDateiname);
 	}
 	
 	// Mitarbeiter Methoden
@@ -149,16 +169,16 @@ public class ShopVerwaltung implements ShopInterface {
 	/**
 	 * Diese Methode bildet eine neue Mitarbeiter Instanz und fŸgt sie
 	 * zur Mitarbeiterverwaltung hinzu.
-	 * @param id Id des neuen Mitarbeiters
 	 * @param name Name des neuen Mitarbeiters
 	 * @throws MitarbeiterExistiertBereitsException
 	 * @throws UsernameExistiertBereitsException 
 	 */
-	public void fuegeMitarbeiterHinzu(int id, String username, String passwort, String name) throws MitarbeiterExistiertBereitsException, UsernameExistiertBereitsException{
+	public void fuegeMitarbeiterHinzu(String username, String passwort, String name, MitarbeiterFunktion funktion, double gehalt) throws MitarbeiterExistiertBereitsException, UsernameExistiertBereitsException{
 		this.existiertUsernameSchon(username, " - in fuegeMitarbeiterHinzu() !");
 		
-		Mitarbeiter m = new Mitarbeiter(id, username, passwort, name, MitarbeiterFunktion.Mitarbeiter);
+		Mitarbeiter m = new Mitarbeiter(mitarbeiterNextId, username, passwort, name, funktion, gehalt);
 		meineMitarbeiter.einfuegen(m);
+		mitarbeiterNextId++;
 	}
 
 	/**
@@ -166,7 +186,25 @@ public class ShopVerwaltung implements ShopInterface {
 	 * @throws IOException
 	 */
 	public void schreibeMitarbeiter() throws IOException{
-		meineMitarbeiter.schreibeDaten("SHOP_M.ser");
+		meineMitarbeiter.schreibeDaten(mitarbeiterDateiname);
+	}
+	
+	/**
+	 * Diese Methode ist zum bearbeiten von Mitarbeitern.
+	 * @param id
+	 * @param passwort
+	 * @param name
+	 * @param funktion
+	 * @param gehalt
+	 * @param blockiert
+	 * @throws MitarbeiterExistiertNichtException
+	 */
+	public void mitarbeiterBearbeiten(int id, String passwort, String name, MitarbeiterFunktion funktion, double gehalt, boolean blockiert) throws MitarbeiterExistiertNichtException{
+		Mitarbeiter m = sucheMitarbeiter(id);
+		m.setPasswort(passwort);
+		m.setFunktion(funktion);
+		m.setGehalt(gehalt);
+		m.setBlockiert(blockiert);
 	}
 	
 	/**
@@ -225,16 +263,37 @@ public class ShopVerwaltung implements ShopInterface {
 	/**
 	 * Diese Methode bidet eine neue Kunden Instanz und fuegt sie
 	 * zur Kundenverwaltung hinzu.
-	 * @param id Id des neuen Kunden
 	 * @param name Name des neuen Kunden
 	 * @throws KundeExistiertBereitsException
 	 * @throws UsernameExistiertBereitsException 
 	 */
-	public void fuegeKundenHinzu(int id, String username, String passwort, String name, String strasse, int plz, String wohnort) throws KundeExistiertBereitsException, UsernameExistiertBereitsException{
+	public void fuegeKundenHinzu(String username, String passwort, String name, String strasse, int plz, String wohnort) throws KundeExistiertBereitsException, UsernameExistiertBereitsException{
 		this.existiertUsernameSchon(username, " - in fuegeKundenHinzu() !");
 		
-		Kunde k = new Kunde(id, username, passwort, name, strasse, plz, wohnort);
+		Kunde k = new Kunde(kundenNextId, username, passwort, name, strasse, plz, wohnort);
 		meineKunden.einfuegen(k);
+		kundenNextId++;
+	}
+	
+	/**
+	 * Diese Methode ist zum bearbeiten einer Kunden Instanz zustaendig.
+	 * @param id
+	 * @param passwort
+	 * @param name
+	 * @param strasse
+	 * @param plz
+	 * @param wohnort
+	 * @param blockiert
+	 * @throws KundeExistiertNichtException
+	 */
+	public void kundenBearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException{
+		Kunde k = sucheKunde(id);
+		k.setPasswort(passwort);
+		k.setName(name);
+		k.setStrasse(strasse);
+		k.setPlz(plz);
+		k.setWohnort(wohnort);
+		k.setBlockiert(blockiert);
 	}
 
 	/**
@@ -242,7 +301,7 @@ public class ShopVerwaltung implements ShopInterface {
  	* @throws IOException
  	*/
 	public void schreibeKunden() throws IOException{
-		meineKunden.schreibeDaten("SHOP_K.ser");
+		meineKunden.schreibeDaten(kundenDateiname);
 	}
 	
 	public void inDenWarenkorbLegen(Kunde kunde, Artikel artikel, int stueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
@@ -276,6 +335,20 @@ public class ShopVerwaltung implements ShopInterface {
 		meineKunden.leeren(k);
 	}
 	
+	public Kunde loginVergessen(String name, String strasse, int zip, String wohnort){
+		Kunde result = null;
+		Iterator<Kunde> itK = meineKunden.getKundenListe().iterator();
+		while(itK.hasNext()){
+			Kunde k = itK.next();
+			if(k.getName().equals(name) && k.getStrasse().equals(strasse) && k.getPlz() == zip && k.getWohnort().equals(wohnort)){
+				result = k;
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Methode zur überprüfung des Logins auf basis des Usernamens und des Passwortes
 	 * @param username
@@ -306,21 +379,22 @@ public class ShopVerwaltung implements ShopInterface {
 	// Ereignis Methoden
 	
 	public void schreibeEreignisse() throws IOException{
-		meineEreignisse.schreibeDaten("EinAuslagerung.log");
+		meineEreignisse.schreibeDaten(logDateiname);
 	}
 	
 	public String gibBestandsHistorie(Artikel artikel) throws IOException{
-		return meineEreignisse.gibBestandsHistorie(artikel, "EinAuslagerung.log");
+		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
 	}
 	
 	public int[] gibBestandsHistorieDaten(Artikel artikel) throws IOException{
-		return meineEreignisse.gibBestandsHistorieDaten(artikel, "EinAuslagerung.log");
+		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
 	}
 	
 	public String gibLogDatei() throws IOException{
-		return meineEreignisse.liesLogDatei("EinAuslagerung.log");
+		return meineEreignisse.liesLogDatei(logDateiname);
 	}
 
+	@Override
 	public void disconnect() throws IOException {
 		// TODO Auto-generated method stub
 		
