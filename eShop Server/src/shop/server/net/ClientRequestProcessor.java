@@ -155,7 +155,7 @@ class ClientRequestProcessor implements Runnable {
 				sucheMitarbeiter();
 			}
 			else if (input.equals("ma")) {
-				gibAlleMitarbeiter();
+//				gibAlleMitarbeiter();
 			}
 			else if (input.equals("me")) {
 				fuegeMitarbeiterHinzu();
@@ -206,6 +206,19 @@ class ClientRequestProcessor implements Runnable {
 			}
 			else if (input.equals("kb")) {
 				kundenBearbeiten();
+			} else if (input.equals("sk")) {
+				// Aktion "Bücher _f_inden" (suchen) gewählt
+				sucheKunde();
+			}
+			else if (input.equals("gak")) {
+				// Aktion "_s_peichern" gewählt
+				gibAlleKunden();
+			}else if (input.equals("kl")) {
+				// Aktion "_s_peichern" gewählt
+				kundenLoeschen();
+			}else if (input.equals("sk")) {
+				// Aktion "_s_peichern" gewählt
+				schreibeKunden();
 			} 
 			// ---
 			// weitere Server-Dienste ...
@@ -1093,8 +1106,69 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 
+	public void sucheKunde() {
+		Kunde k = null;
+		int id = 0;
+		try {
+			id = Integer.parseInt(in.readLine());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			k = shop.sucheKunde(id);
+		} catch (KundeExistiertNichtException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (k != null) {
+			out.println("kse");
+			sendeKunde(k);
+		} else {out.println("ksf");
+		}
+	}
+	
+	private void gibAlleKunden() {
+		Vector<Kunde> kundenListe = null;
+
+		kundenListe = shop.gibAlleKunden();
+		Iterator<Kunde> iter = kundenListe.iterator();
+
+		out.println(kundenListe.size());
+		while(iter.hasNext()){
+			out.print(iter.next().getId());
+			sendeKunde(iter.next());
+		}
+	}
+	
+	public void kundenLoeschen() {
+		try {
+			int id = Integer.parseInt(in.readLine());
+			Kunde k = shop.sucheKunde(id);
+			shop.kundenLoeschen(k);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (KundenLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Loeschen von Kunde: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void schreibeKunden() {
+		try {
+			shop.schreibeKunden();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Kunde: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	private void sendeKunde(Kunde k) {
-		out.println(k.getId());
 		out.println(k.getUsername());
 		out.println(k.getPasswort());
 		out.println(k.getName());

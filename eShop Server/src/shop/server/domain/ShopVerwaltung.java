@@ -430,5 +430,5 @@ public class ShopVerwaltung implements ShopInterface{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
