@@ -29,7 +29,7 @@ import shop.common.valueobjects.WarenkorbArtikel;
 
 /**
  * Klasse zur Verwaltung vom eShop.
- * 
+ *  
  * @author Christof Ferreira Torres, Angelo Migliosi & Oliver Thummerer
  * @version 1.0.0
  */
