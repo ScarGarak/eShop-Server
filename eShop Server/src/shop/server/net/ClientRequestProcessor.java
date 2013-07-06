@@ -9,11 +9,13 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
+import shop.common.exceptions.ArtikelExistiertNichtException;
 import shop.common.exceptions.KundeExistiertBereitsException;
 import shop.common.exceptions.MitarbeiterExistiertBereitsException;
 import shop.common.exceptions.MitarbeiterExistiertNichtException;
 import shop.common.exceptions.UsernameExistiertBereitsException;
 import shop.common.interfaces.ShopInterface;
+import shop.common.valueobjects.Artikel;
 import shop.common.valueobjects.Kunde;
 import shop.common.valueobjects.Mitarbeiter;
 import shop.common.valueobjects.MitarbeiterFunktion;
@@ -117,6 +119,17 @@ class ClientRequestProcessor implements Runnable {
 				mitarbeiterBearbeiten();
 			}else if (input.equals("ml")){
 				mitarbeiterLoeschen();
+			}else if (input.equals("sm")){
+				schreibeMitarbeiter();
+			}
+			else if (input.equals("se")){
+				schreibeEreignisse();
+			}else if (input.equals("gbh")){
+				gibBestandsHistorie();
+			}else if (input.equals("gbhd")){
+				gibBestandsHistorieDaten();
+			}else if (input.equals("gl")){
+				gibLogDatei();
 			}
 			/*else if (input.equals("a")) {
 				// Aktion "Bücher _a_usgeben" gewählt
@@ -376,7 +389,7 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 	
-	////////Mitarbeiter ////////
+	//////// Mitarbeiter ////////
 
 	private void sucheMitarbeiter(){
 		String input = null;
@@ -473,14 +486,83 @@ class ClientRequestProcessor implements Runnable {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	private void schreibeMitarbeiter(){
+		try {
+			shop.schreibeMitarbeiter();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Mitarbeitern: ");
+			System.out.println(e.getMessage());
+		}
+	}
 
 	private void sendeMitarbeiter(Mitarbeiter m){
 		out.println(m.getId());
 		out.println(m.getUsername());
 		out.println(m.getPasswort());
+		out.println(m.getName());
 		out.println(m.getFunktion());
 		out.println(m.getGehalt());
 		out.println(m.getBlockiert());
+	}
+	
+	
+	//////// Ereignisse ////////
+	
+	private void schreibeEreignisse(){
+		try {
+			shop.schreibeEreignisse();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Ereignissen: ");
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void gibBestandsHistorie(){
+		try {
+			int artikelnummer = Integer.parseInt(in.readLine());
+			Artikel a = shop.gibArtikel(artikelnummer);
+			String bestandshistorie = shop.gibBestandsHistorie(a);
+			out.println(bestandshistorie);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (ArtikelExistiertNichtException e){
+			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void gibBestandsHistorieDaten(){
+		try {
+			int artikelnummer = Integer.parseInt(in.readLine());
+			Artikel a = shop.gibArtikel(artikelnummer);
+			int[] daten = shop.gibBestandsHistorieDaten(a);
+			out.println(daten.length);
+			for (int i = 0; i < daten.length; i++){
+				out.println(daten[i]);
+			}
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (ArtikelExistiertNichtException e){
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void gibLogDatei(){
+		try {
+			String logDatei = shop.gibLogDatei();
+			String[] eintraege = logDatei.split("\n");
+			out.println(eintraege.length);
+			for(int i = 0; i < eintraege.length; i++){
+				out.println(eintraege[i]);
+			}
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen der LogDatei: ");
+			System.out.println(e.getMessage());
+		}
 	}
 	
 }
