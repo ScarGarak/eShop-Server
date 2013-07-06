@@ -1,6 +1,5 @@
 package shop.server.net;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -116,6 +115,7 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("pl")) {
 				pruefeLogin();
 			}
+
 			// Artikel-Methode 
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
@@ -205,7 +205,6 @@ class ClientRequestProcessor implements Runnable {
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
 	}
-	
 	
 	private void fuegeKundenHinzu() {
 		String input = null;
@@ -995,16 +994,13 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
 			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			int[] daten = shop.gibBestandsHistorieDaten(a);
-			out.println(daten.length);
-			for (int i = 0; i < daten.length; i++){
-				out.println(daten[i]);
-			}
+			String bestandshistorie = shop.gibBestandsHistorie(a);
+			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
+			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
 			System.out.println(e.getMessage());
 		}
 	}
