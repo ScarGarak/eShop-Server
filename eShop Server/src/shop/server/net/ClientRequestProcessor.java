@@ -156,7 +156,7 @@ class ClientRequestProcessor implements Runnable {
 				sucheMitarbeiter();
 			}
 			else if (input.equals("ma")) {
-//				gibAlleMitarbeiter();
+				gibAlleMitarbeiter();
 			}
 			else if (input.equals("me")) {
 				fuegeMitarbeiterHinzu();
@@ -209,17 +209,13 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("kb")) {
 				kundenBearbeiten();
 			} else if (input.equals("sk")) {
-				// Aktion "Bücher _f_inden" (suchen) gewählt
 				sucheKunde();
 			}
 			else if (input.equals("gak")) {
-				// Aktion "_s_peichern" gewählt
 				gibAlleKunden();
 			}else if (input.equals("kl")) {
-				// Aktion "_s_peichern" gewählt
 				kundenLoeschen();
-			}else if (input.equals("sk")) {
-				// Aktion "_s_peichern" gewählt
+			}else if (input.equals("sck")) {
 				schreibeKunden();
 			} 
 			// ---
@@ -1131,8 +1127,10 @@ class ClientRequestProcessor implements Runnable {
 		
 		if (k != null) {
 			out.println("kse");
+			out.print(k.getId());
 			sendeKunde(k);
-		} else {out.println("ksf");
+		} else {
+			out.println("ksf");
 		}
 	}
 	
@@ -1144,8 +1142,10 @@ class ClientRequestProcessor implements Runnable {
 
 		out.println(kundenListe.size());
 		while(iter.hasNext()){
-			out.print(iter.next().getId());
-			sendeKunde(iter.next());
+			Kunde k = iter.next();
+			out.println(k.getId());
+			sendeKunde(k);
+			out.println(k.getBlockiert());
 		}
 	}
 	
