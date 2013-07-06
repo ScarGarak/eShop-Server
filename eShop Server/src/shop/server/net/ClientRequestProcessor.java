@@ -219,7 +219,7 @@ class ClientRequestProcessor implements Runnable {
 			}else if (input.equals("sk")) {
 				// Aktion "_s_peichern" gewählt
 				schreibeKunden();
-			}
+			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
