@@ -28,7 +28,6 @@ import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.common.valueobjects.Person;
 import shop.common.valueobjects.Rechnung;
 import shop.common.valueobjects.WarenkorbArtikel;
-import shop.server.domain.ShopVerwaltung;
 
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
@@ -197,21 +196,11 @@ class ClientRequestProcessor implements Runnable {
 				gibLogDatei();
 			}
 			else if (input.equals("lv")) {
-				// Aktion "login vergessen" ausgewählt
-				System.out.println("server lv");
 				loginVergessen();
 			}
 			else if (input.equals("kb")) {
-				// Aktion "Buch _e_infügen" gewählt
 				kundenBearbeiten();
-			} /*else if (input.equals("f")) {
-				// Aktion "Bücher _f_inden" (suchen) gewählt
-				suchen();
-			}
-			else if (input.equals("s")) {
-				// Aktion "_s_peichern" gewählt
-				speichern();
-			}*/
+			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -957,7 +946,10 @@ class ClientRequestProcessor implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (NumberFormatException | IOException e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1063,11 +1055,16 @@ class ClientRequestProcessor implements Runnable {
 			int artikelnummer = Integer.parseInt(in.readLine());
 			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
+			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
+			out.println(daten.length);
+			for (int i = 0; i < daten.length; i++){
+				out.println(daten[i]);
+			}
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
 			System.out.println(e.getMessage());
 		}
 	}
