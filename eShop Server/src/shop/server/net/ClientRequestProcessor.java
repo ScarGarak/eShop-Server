@@ -28,7 +28,6 @@ import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.common.valueobjects.Person;
 import shop.common.valueobjects.Rechnung;
 import shop.common.valueobjects.WarenkorbArtikel;
-import shop.server.domain.ShopVerwaltung;
 
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
@@ -123,6 +122,9 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
 			}
+			else if (input.equals("abv")) {
+				artikelBestandVeraendern();
+			}
 			else if (input.equals("gaasna")) {
 				gibAlleArtikelSortiertNachArtikelnummer();
 			}
@@ -134,6 +136,9 @@ class ClientRequestProcessor implements Runnable {
 			}
 			else if (input.equals("sab")) {
 				sucheArtikelNachBezeichnung();
+			}
+			else if (input.equals("ab")) {
+				artikelBearbeiten();
 			}
 			else if (input.equals("ea")) {
 				entferneArtikel();
@@ -150,7 +155,7 @@ class ClientRequestProcessor implements Runnable {
 				sucheMitarbeiter();
 			}
 			else if (input.equals("ma")) {
-				gibAlleMitarbeiter();
+//				gibAlleMitarbeiter();
 			}
 			else if (input.equals("me")) {
 				fuegeMitarbeiterHinzu();
@@ -197,21 +202,24 @@ class ClientRequestProcessor implements Runnable {
 				gibLogDatei();
 			}
 			else if (input.equals("lv")) {
-				// Aktion "login vergessen" ausgewählt
-				System.out.println("server lv");
 				loginVergessen();
 			}
 			else if (input.equals("kb")) {
-				// Aktion "Buch _e_infügen" gewählt
 				kundenBearbeiten();
-			} /*else if (input.equals("f")) {
+			} else if (input.equals("sk")) {
 				// Aktion "Bücher _f_inden" (suchen) gewählt
-				suchen();
+				sucheKunde();
 			}
-			else if (input.equals("s")) {
+			else if (input.equals("gak")) {
 				// Aktion "_s_peichern" gewählt
-				speichern();
-			}*/
+				gibAlleKunden();
+			}else if (input.equals("kl")) {
+				// Aktion "_s_peichern" gewählt
+				kundenLoeschen();
+			}else if (input.equals("sk")) {
+				// Aktion "_s_peichern" gewählt
+				schreibeKunden();
+			}
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -474,6 +482,49 @@ class ClientRequestProcessor implements Runnable {
 		} 
 	}
 	
+	private void artikelBestandVeraendern() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Mitarbeiters:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Mitarbeiter): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die Anzahl:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Anzahl): ");
+			System.out.println(e.getMessage());
+		}
+		int anzahl = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.artikelBestandVeraendern(shop.sucheMitarbeiter(id), artikelnummer, anzahl);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNichtException");
+		} 
+	}
+	
 	private void gibAlleArtikelSortiertNachArtikelnummer() {
 		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
 		List<Artikel> artikel = null;
@@ -526,6 +577,46 @@ class ClientRequestProcessor implements Runnable {
 		artikel = shop.sucheArtikel(bezeichnung);
 
 		sendeArtikelAnClient(artikel);
+	}
+	
+	private void artikelBearbeiten() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+
+		// dann den Preis:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Preis): ");
+			System.out.println(e.getMessage());
+		}
+		double preis = Double.parseDouble(input);
+		
+		// dann die Bezeichnung:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bezeichnung): ");
+			System.out.println(e.getMessage());
+		}
+		String bezeichnung = new String(input);
+		
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.artikelBearbeiten(artikelnummer, preis, bezeichnung);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} 
 	}
 	
 	private void entferneArtikel() {
@@ -957,7 +1048,10 @@ class ClientRequestProcessor implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (NumberFormatException | IOException e) {
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1012,8 +1106,69 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 
+	public void sucheKunde() {
+		Kunde k = null;
+		int id = 0;
+		try {
+			id = Integer.parseInt(in.readLine());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			k = shop.sucheKunde(id);
+		} catch (KundeExistiertNichtException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (k != null) {
+			out.println("kse");
+			sendeKunde(k);
+		} else {out.println("ksf");
+		}
+	}
+	
+	private void gibAlleKunden() {
+		Vector<Kunde> kundenListe = null;
+
+		kundenListe = shop.gibAlleKunden();
+		Iterator<Kunde> iter = kundenListe.iterator();
+
+		out.println(kundenListe.size());
+		while(iter.hasNext()){
+			out.print(iter.next().getId());
+			sendeKunde(iter.next());
+		}
+	}
+	
+	public void kundenLoeschen() {
+		try {
+			int id = Integer.parseInt(in.readLine());
+			Kunde k = shop.sucheKunde(id);
+			shop.kundenLoeschen(k);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (KundenLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Loeschen von Kunde: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void schreibeKunden() {
+		try {
+			shop.schreibeKunden();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Kunde: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	private void sendeKunde(Kunde k) {
-		out.println(k.getId());
 		out.println(k.getUsername());
 		out.println(k.getPasswort());
 		out.println(k.getName());
@@ -1063,11 +1218,16 @@ class ClientRequestProcessor implements Runnable {
 			int artikelnummer = Integer.parseInt(in.readLine());
 			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
+			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
+			out.println(daten.length);
+			for (int i = 0; i < daten.length; i++){
+				out.println(daten[i]);
+			}
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
 			System.out.println(e.getMessage());
 		}
 	}

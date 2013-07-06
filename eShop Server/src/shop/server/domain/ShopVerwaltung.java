@@ -29,7 +29,7 @@ import shop.common.valueobjects.WarenkorbArtikel;
 
 /**
  * Klasse zur Verwaltung vom eShop.
- * 
+ *  
  * @author Christof Ferreira Torres, Angelo Migliosi & Oliver Thummerer
  * @version 1.0.0
  */
@@ -411,11 +411,13 @@ public class ShopVerwaltung implements ShopInterface{
 		meineEreignisse.schreibeDaten(logDateiname);
 	}
 	
-	public String gibBestandsHistorie(Artikel artikel) throws IOException{
+	public String gibBestandsHistorie(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
+		Artikel artikel = gibArtikel(artikelnummer);
 		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
 	}
 	
-	public int[] gibBestandsHistorieDaten(Artikel artikel) throws IOException{
+	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
+		Artikel artikel = gibArtikel(artikelnummer);
 		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
 	}
 	
@@ -428,5 +430,5 @@ public class ShopVerwaltung implements ShopInterface{
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
