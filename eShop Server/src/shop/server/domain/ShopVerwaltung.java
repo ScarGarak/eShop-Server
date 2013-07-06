@@ -63,7 +63,21 @@ public class ShopVerwaltung implements ShopInterface{
 	 */
 	public ShopVerwaltung() throws IOException {
 		meineArtikel = new ArtikelVerwaltung();
-		meineArtikel.liesDaten(artikelDateiname);
+		//meineArtikel.liesDaten(artikelDateiname);
+		try {
+			meineArtikel.einfuegen(new Artikel(10010, "Apfel", 1.50, 35));
+			meineArtikel.einfuegen(new Artikel(10011, "Banane", 1.60, 8));
+			meineArtikel.einfuegen(new Massengutartikel(10012, "Dosenbier", 2.00, 6, 48));
+			meineArtikel.einfuegen(new Artikel(10013, "Klavier", 7000, 7));
+			meineArtikel.einfuegen(new Massengutartikel(10014, "Joghurt", 1.20, 4, 24));
+		} catch (ArtikelExistiertBereitsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		meineArtikel.schreibeDaten(artikelDateiname);
 		
 		meineMitarbeiter = new MitarbeiterVerwaltung();
 		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
@@ -303,16 +317,24 @@ public class ShopVerwaltung implements ShopInterface{
 		meineKunden.schreibeDaten(kundenDateiname);
 	}
 	
-	public void inDenWarenkorbLegen(Kunde kunde, Artikel artikel, int stueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
-		meineKunden.inDenWarenkorbLegen(kunde, new WarenkorbArtikel(artikel, stueckzahl));
+	public List<WarenkorbArtikel> gibWarenkorb(Kunde kunde) {
+		return meineKunden.gibWarenkorb(kunde);
 	}
 	
-	public void ausDemWarenkorbHerausnehmen(Kunde kunde, Artikel artikel) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
-		meineKunden.ausDemWarenkorbHerausnehmen(kunde, artikel);
+	private WarenkorbArtikel gibWarenkorbArtikel(Kunde kunde, Artikel artikel) throws ArtikelExistiertNichtException {
+		return meineKunden.gibWarenkorbArtikel(kunde, artikel);
 	}
 	
-	public void stueckzahlAendern(Kunde kunde, WarenkorbArtikel warenkorbArtikel, int neueStueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
-		meineKunden.stueckzahlAendern(kunde, warenkorbArtikel, neueStueckzahl);
+	public void inDenWarenkorbLegen(Kunde kunde, int artikelnummer, int stueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+		meineKunden.inDenWarenkorbLegen(kunde, new WarenkorbArtikel(this.gibArtikel(artikelnummer), stueckzahl));
+	}
+	
+	public void ausDemWarenkorbHerausnehmen(Kunde kunde, int artikelnummer) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+		meineKunden.ausDemWarenkorbHerausnehmen(kunde, this.gibArtikel(artikelnummer));
+	}
+	
+	public void stueckzahlAendern(Kunde kunde, int warenkorbArtikelnummer, int neueStueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+		meineKunden.stueckzahlAendern(kunde, this.gibWarenkorbArtikel(kunde, this.gibArtikel(warenkorbArtikelnummer)), neueStueckzahl);
 	}
 	
 	public Rechnung kaufen(Kunde kunde) throws IOException, WarenkorbIstLeerException {

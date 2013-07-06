@@ -6,11 +6,30 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
+import shop.common.exceptions.ArtikelBestandIstKeineVielfacheDerPackungsgroesseException;
+import shop.common.exceptions.ArtikelBestandIstZuKleinException;
+import shop.common.exceptions.ArtikelExistiertBereitsException;
+import shop.common.exceptions.ArtikelExistiertNichtException;
+import shop.common.exceptions.KundeExistiertBereitsException;
+import shop.common.exceptions.KundeExistiertNichtException;
+import shop.common.exceptions.MitarbeiterExistiertBereitsException;
+import shop.common.exceptions.MitarbeiterExistiertNichtException;
+import shop.common.exceptions.UsernameExistiertBereitsException;
+import shop.common.exceptions.WarenkorbIstLeerException;
 import shop.common.interfaces.ShopInterface;
+import shop.common.valueobjects.Artikel;
 import shop.common.valueobjects.Kunde;
+import shop.common.valueobjects.Massengutartikel;
 import shop.common.valueobjects.Mitarbeiter;
+import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.common.valueobjects.Person;
+import shop.common.valueobjects.Rechnung;
+import shop.common.valueobjects.WarenkorbArtikel;
+import shop.server.domain.ShopVerwaltung;
 
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
@@ -97,20 +116,86 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("pl")) {
 				pruefeLogin();
 			}
-			/*else if (input.equals("a")) {
-				// Aktion "Bücher _a_usgeben" gewählt
-				ausgeben();
-			} else if (input.equals("e")) {
-				// Aktion "Buch _e_infügen" gewählt
-				einfuegen();
-			} else if (input.equals("f")) {
-				// Aktion "Bücher _f_inden" (suchen) gewählt
-				suchen();
+			// Artikel-Methode 
+			else if (input.equals("fae")) {
+				fuegeArtikelEin();
 			}
-			else if (input.equals("s")) {
-				// Aktion "_s_peichern" gewählt
-				speichern();
-			}*/
+			else if (input.equals("fme")) {
+				fuegeMassengutartikelEin();
+			}
+			else if (input.equals("gaasna")) {
+				gibAlleArtikelSortiertNachArtikelnummer();
+			}
+			else if (input.equals("gaasnb")) {
+				gibAlleArtikelSortiertNachBezeichnung();
+			}
+			else if (input.equals("saa")) {
+				sucheArtikelNachArtikelnummer();
+			}
+			else if (input.equals("sab")) {
+				sucheArtikelNachBezeichnung();
+			}
+			else if (input.equals("ea")) {
+				entferneArtikel();
+			}
+			else if (input.equals("scha")) {
+				schreibeArtikel();
+			}
+			// Kunden-Methoden
+			else if (input.equals("ke")) {
+				fuegeKundenHinzu();
+			} 
+			// Mitarbeiter-Methoden
+			else if (input.equals("mf")) {
+				sucheMitarbeiter();
+			}
+			else if (input.equals("ma")) {
+				gibAlleMitarbeiter();
+			}
+			else if (input.equals("me")) {
+				fuegeMitarbeiterHinzu();
+			}
+			else if (input.equals("mb")) {
+				mitarbeiterBearbeiten();
+			}
+			else if (input.equals("ml")) {
+				mitarbeiterLoeschen();
+			}
+			else if (input.equals("sm")) {
+				schreibeMitarbeiter();
+			}
+			// Warenkorb
+			else if (input.equals("gw")) {
+				gibWarenkorb();
+			}
+			else if (input.equals("idwl")) {
+				inDenWarenkorbLegen();
+			}
+			else if (input.equals("adwh")) {
+				ausDemWarenkorbHerausnehmen();
+			}
+			else if (input.equals("sa")) {
+				stueckzahlAendern();
+			}
+			else if (input.equals("k")) {
+				kaufen();
+			}
+			else if (input.equals("l")) {
+				leeren();
+			}
+			// Ereignis-Methoden
+			else if (input.equals("se")) {
+				schreibeEreignisse();
+			}
+			else if (input.equals("gbh")) {
+				gibBestandsHistorie();
+			}
+			else if (input.equals("gbhd")) {
+				gibBestandsHistorieDaten();
+			}
+			else if (input.equals("gl")) {
+				gibLogDatei();
+			}
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -119,6 +204,81 @@ class ClientRequestProcessor implements Runnable {
 
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
+	}
+	
+	
+	private void fuegeKundenHinzu() {
+		String input = null;
+		String ergebnis = null;
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String username = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String passwort = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String name = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strasse = new String(input);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String strPlz = new String(input);
+		int plz = Integer.parseInt(strPlz);
+		
+		try {
+			input = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String wohnort = new String(input);
+		
+		try {
+			shop.fuegeKundenHinzu(username, passwort, name, strasse, plz, wohnort);
+			try {
+				shop.schreibeKunden();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ergebnis = "kee";
+		} catch (KundeExistiertBereitsException e) {
+			ergebnis = "keb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UsernameExistiertBereitsException e) {
+			ergebnis = "ueb";
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out.println(ergebnis);
 	}
 	
 	private void pruefeLogin() {
@@ -143,128 +303,535 @@ class ClientRequestProcessor implements Runnable {
 		Person p = shop.pruefeLogin(username, password);
 		if (p != null) {
 			sendePersonAnClient(p);
+		} else {
+			out.println("Fehler");
+		}
+	}
+	
+	private void fuegeArtikelEin() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Mitarbeiters:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Mitarbeiter): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die Bezeichnung:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bezeichnung): ");
+			System.out.println(e.getMessage());
+		}
+		String bezeichnung = new String(input);
+		
+		// dann den Preis:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Preis): ");
+			System.out.println(e.getMessage());
+		}
+		double preis = Double.parseDouble(input);
+		
+		// dann den Bestand:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bestand): ");
+			System.out.println(e.getMessage());
+		}
+		int bestand = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.fuegeArtikelEin(shop.sucheMitarbeiter(id), artikelnummer, bezeichnung, preis, bestand);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertBereitsException e) {
+			out.println("ArtikelExistiertBereitsException");
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNichtException");
+		}
+	}
+	
+	private void fuegeMassengutartikelEin() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Mitarbeiters:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Mitarbeiter): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die Bezeichnung:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bezeichnung): ");
+			System.out.println(e.getMessage());
+		}
+		String bezeichnung = new String(input);
+		
+		// dann den Preis:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Preis): ");
+			System.out.println(e.getMessage());
+		}
+		double preis = Double.parseDouble(input);
+		
+		// dann die Packungsgroesse:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Packungsgroesse): ");
+			System.out.println(e.getMessage());
+		}
+		int packungsgroesse = Integer.parseInt(input);
+		
+		// dann den Bestand:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bestand): ");
+			System.out.println(e.getMessage());
+		}
+		int bestand = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.fuegeMassengutartikelEin(shop.sucheMitarbeiter(id), artikelnummer, bezeichnung, preis, packungsgroesse, bestand);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertBereitsException e) {
+			out.println("ArtikelExistiertBereitsException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNichtException");
+		} 
+	}
+	
+	private void gibAlleArtikelSortiertNachArtikelnummer() {
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		List<Artikel> artikel = null;
+		artikel = shop.gibAlleArtikelSortiertNachArtikelnummer();
+		
+		sendeArtikelAnClient(artikel);
+	}
+	
+	private void gibAlleArtikelSortiertNachBezeichnung() {
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		List<Artikel> artikel = null;
+		artikel = shop.gibAlleArtikelSortiertNachBezeichnung();
+		
+		sendeArtikelAnClient(artikel);
+	}
+	
+	private void sucheArtikelNachArtikelnummer() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// hier ist nur die Artikelnummer der gesuchten Artikel erforderlich:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		List<Artikel> artikel = null;
+		artikel = shop.sucheArtikel(artikelnummer);
+
+		sendeArtikelAnClient(artikel);
+	}
+	
+	private void sucheArtikelNachBezeichnung() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// hier ist nur der Bezeichnung der gesuchten Artikel erforderlich:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bezeichnung): ");
+			System.out.println(e.getMessage());
+		}
+		String bezeichnung = new String(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		List<Artikel> artikel = null;
+		artikel = shop.sucheArtikel(bezeichnung);
+
+		sendeArtikelAnClient(artikel);
+	}
+	
+	private void entferneArtikel() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Mitarbeiters:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Mitarbeiter): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.entferneArtikel(shop.sucheMitarbeiter(id), artikelnummer);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (IOException e) {
+			out.println("IOException");
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNichtException");
+		}
+	}
+	
+	private void schreibeArtikel() {
+		// Parameter sind in diesem Fall nicht einzulesen
+		
+		// die Arbeit macht wie immer das Shopverwaltungsobjekt:
+		try {
+			shop.schreibeArtikel();
+			out.println("Erfolg");
+		} catch (IOException e) {
+			out.println("IOException");
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Sichern: ");
+			System.out.println(e.getMessage());
+			out.println("Fehler");
+		} 
+	}
+	
+	private void gibWarenkorb() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Kunden:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+		
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		List<WarenkorbArtikel> warenkorbArtikel = null;
+		try {
+			warenkorbArtikel = shop.gibWarenkorb(shop.sucheKunde(id));
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
+		}
+				
+		sendeWarenkorbArtikelAnClient(warenkorbArtikel);
+	}
+	
+	private void inDenWarenkorbLegen() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Kunden:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die StŸckzahl:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (StŸckzahl): ");
+			System.out.println(e.getMessage());
+		}
+		int stueckzahl = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.inDenWarenkorbLegen(shop.sucheKunde(id), artikelnummer, stueckzahl);
+			out.println("Erfolg");
+		} catch (ArtikelBestandIstZuKleinException e) {
+			out.println("ArtikelBestandIstZuKleinException");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
+		}
+	}
+	
+	private void ausDemWarenkorbHerausnehmen() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Kunden:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.ausDemWarenkorbHerausnehmen(shop.sucheKunde(id), artikelnummer);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
+		}
+	}
+	
+	private void stueckzahlAendern() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Kunden:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Warenkorb Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die neue StŸckzahl:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Neue StŸckzahl): ");
+			System.out.println(e.getMessage());
+		}
+		int neueStueckzahl = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.stueckzahlAendern(shop.sucheKunde(id), artikelnummer, neueStueckzahl);
+			out.println("Erfolg");
+		} catch (ArtikelBestandIstZuKleinException e) {
+			out.println("ArtikelBestandIstZuKleinException");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
+		}
+	}
+	
+	private void kaufen() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// hier ist nur die ID des Kunden erforderlich:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		Rechnung rechnung = null;
+		try {
+			rechnung = shop.kaufen(shop.sucheKunde(id));
+			sendeRechnungAnClient(rechnung);
+		} catch (IOException e) {
+			out.println("IOException");
+		} catch (WarenkorbIstLeerException e) {
+			out.println("WarenkorbIstLeerException");
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
+		}
+	}
+	
+	private void leeren() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// hier ist nur die ID des Kunden erforderlich:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Kunde): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.leeren(shop.sucheKunde(id));
+			out.println("Erfolg");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (KundeExistiertNichtException e) {
+			out.println("KundeExistiertNichtException");
 		}
 	}
 	
 	private void sendePersonAnClient(Person p) {
+		// Typ der Person senden
 		out.println(p.getPersonTyp());
+		// ID der Person senden
 		out.println(p.getId());
+		// Name der Person senden
 		out.println(p.getName());
 		switch(p.getPersonTyp()) {
 			case Kunde: 
+				// Strasse des Kunden senden
 				out.println(((Kunde) p).getStrasse());
+				// Postleitzahl des Kunden senden
 				out.println(((Kunde) p).getPlz());
+				// Wohnort des Kunden senden
 				out.println(((Kunde) p).getWohnort());
 				break;
 			case Mitarbeiter: 
+				// Funktion des Mitarbeiters senden
 				out.println(((Mitarbeiter) p).getFunktion());
+				// Gehalt des Mitarbeiters senden
 				out.println(((Mitarbeiter) p).getGehalt());
 				break;
 			default: 
 				break;
 		}
+		out.println(p.getBlockiert());
 	}
 	
-	/*
-	private void speichern() {
-		// Parameter sind in diesem Fall nicht einzulesen
-		
-		// die Arbeit macht wie immer Bibliotheksverwaltungsobjekt:
-		try {
-			bibV.schreibeBuecher();
-			out.println("Erfolg");
-		} catch (Exception e) {
-			System.out.println("--->Fehler beim Sichern: ");
-			System.out.println(e.getMessage());
-			out.println("Fehler");
-		}
-	}
-
-	private void suchen() {
-		String input = null;
-		// lese die notwendigen Parameter, einzeln pro Zeile
-		// hier ist nur der Titel der gesuchten Bücher erforderlich:
-		try {
-			input = in.readLine();
-		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Titel): ");
-			System.out.println(e.getMessage());
-		}
-		// Achtung: Objekte sind Referenzdatentypen:
-		// Buch-Titel in neues String-Objekt kopieren, 
-		// damit Titel nicht bei nächster Eingabe in input überschrieben wird
-		String titel = new String(input);
-
-		// die eigentliche Arbeit soll das Bibliotheksverwaltungsobjekt machen:
-		List<Buch> buecher = null;
-		if (titel.equals(""))
-			buecher = bibV.gibAlleBuecher();
-		else
-			buecher = bibV.sucheNachTitel(titel);
-
-		sendeBuecherAnClient(buecher);
-	}
-
-	private void ausgeben() {
-		// Die Arbeit soll wieder das Bibliotheksverwaltungsobjekt machen:
-		List<Buch> buecher = null;
-		buecher = bibV.gibAlleBuecher();
-
-		sendeBuecherAnClient(buecher);
-	}
-
-	private void sendeBuecherAnClient(List<Buch> buecher) {
-		Iterator<Buch> iter = buecher.iterator();
-		Buch buch = null;
-		// Anzahl der gefundenen Bücher senden
-		out.println(buecher.size());
+	private void sendeArtikelAnClient(List<Artikel> artikel) {
+		Iterator<Artikel> iter = artikel.iterator();
+		Artikel a = null;
+		// Anzahl der Artikel senden
+		out.println(artikel.size());
 		while (iter.hasNext()) {
-			buch = iter.next();
-			// Nummer des Buchs senden
-			out.println(buch.getNummer());
-			// Titel des Buchs senden
-			out.println(buch.getTitel());
-			// Verfügbarkeit des Buchs senden
-			out.println(buch.isVerfuegbar());
+			a = iter.next();
+			// Artikeltyp des Artikels senden
+			if (a instanceof Massengutartikel)
+				out.println("Massengutartikel");
+			else 
+				out.println("Artikel");
+			// Nummer des Artikels senden
+			out.println(a.getArtikelnummer());
+			// Bezeichnung des Artikels senden
+			out.println(a.getBezeichnung());
+			// Preis des Artikels senden
+			out.println(a.getPreis());
+			// Bestand des Artikels senden
+			out.println(a.getBestand());
+			if (a instanceof Massengutartikel)
+				// Packungsgroesse des Massengutartikels senden
+				out.println(((Massengutartikel) a).getPackungsgroesse());
 		}
 	}
-
-	private void einfuegen() {
-		String input = null;
-		// lese die notwendigen Parameter, einzeln pro Zeile
-		// zuerst die Nummer des einzufügenden Buchs:
-		try {
-			input = in.readLine();
-		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (BuchNr): ");
-			System.out.println(e.getMessage());
+	
+	private void sendeWarenkorbArtikelAnClient(List<WarenkorbArtikel> warenkorbArtikel) {
+		Iterator<WarenkorbArtikel> iter = warenkorbArtikel.iterator();
+		WarenkorbArtikel wa = null;
+		// Anzahl der Warenkorb Artikel senden
+		out.println(warenkorbArtikel.size());
+		while (iter.hasNext()) {
+			wa = iter.next();
+			// Artikel des Warenkorb Artikels senden
+			Artikel a = wa.getArtikel();
+			// Artikeltyp des Artikels senden
+			if (a instanceof Massengutartikel)
+				out.println("Massengutartikel");
+			else 
+				out.println("Artikel");
+			// Nummer des Artikels senden
+			out.println(a.getArtikelnummer());
+			// Bezeichnung des Artikels senden
+			out.println(a.getBezeichnung());
+			// Preis des Artikels senden
+			out.println(a.getPreis());
+			// Bestand des Artikels senden
+			out.println(a.getBestand());
+			if (a instanceof Massengutartikel)
+				// Packungsgroesse des Massengutartikels senden
+				out.println(((Massengutartikel) a).getPackungsgroesse());
+			// StŸckzahl des Warenkorb Artikels senden
+			out.println(wa.getStueckzahl());
 		}
-		int buchNr = Integer.parseInt(input);
-
-		// dann den Titel:
-		try {
-			input = in.readLine();
-		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Titel): ");
-			System.out.println(e.getMessage());
-		}
-		// Achtung: Objekte sind Referenzdatentypen:
-		// Buch-Titel in neues String-Objekt kopieren, 
-		// damit Titel nicht bei nächste Eingabe in input überschrieben wird
-		String titel = new String(input);
-
-		// die eigentliche Arbeit soll das Bibliotheksverwaltungsobjekt machen:
-		boolean ok = bibV.fuegeBuchEin(titel, buchNr);
-
-		// Rückmeldung an den Client: war die Aktion erfolgreich?
-		if (ok)
-			out.println("Erfolg");
-		else
-			out.println("Fehler");
-	}*/
+	}
+	
+	private void sendeRechnungAnClient(Rechnung rechnung) {
+		// Datum der Rechnung senden
+		out.println(rechnung.getDatum());
+		// Warenkorb der Rechnung senden
+		sendeWarenkorbArtikelAnClient(rechnung.getWarenkorb());
+	}
 	
 	private void disconnect() {
 		try {
@@ -277,6 +844,182 @@ class ClientRequestProcessor implements Runnable {
 			System.out.println("--->Fehler beim Beenden der Verbindung: ");
 			System.out.println(e.getMessage());
 			out.println("Fehler");
+		}
+	}
+	
+	//////// Mitarbeiter ////////
+
+	private void sucheMitarbeiter(){
+		String input = null;
+		Mitarbeiter m = null;
+
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Mitarbeiter ID): ");
+			System.out.println(e.getMessage());
+		}
+		int id = new Integer(input);
+
+		try {
+			m = shop.sucheMitarbeiter(id);
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNicht");
+		}
+
+		if(m != null){
+			sendeMitarbeiter(m);
+		}
+
+	}
+
+	private void gibAlleMitarbeiter(){
+		Vector<Mitarbeiter> mitarbeiterListe = null;
+
+		mitarbeiterListe = shop.gibAlleMitarbeiter();
+		Iterator<Mitarbeiter> iter = mitarbeiterListe.iterator();
+
+		out.println(mitarbeiterListe.size());
+		while(iter.hasNext()){
+			sendeMitarbeiter(iter.next());
+		}
+	}
+
+	private void fuegeMitarbeiterHinzu(){
+		try{
+			String username = in.readLine();
+			String passwort = in.readLine();
+			String name = in.readLine();
+			MitarbeiterFunktion funktion = MitarbeiterFunktion.valueOf(in.readLine());
+			double gehalt = Double.parseDouble(in.readLine());
+			shop.fuegeMitarbeiterHinzu(username, passwort, name, funktion, gehalt);
+			out.println("OK");
+		} catch (MitarbeiterExistiertBereitsException e) {
+			out.println("MitarbeiterExistiertBereits");
+		} catch (UsernameExistiertBereitsException e) {
+			out.println("UsernameExistiertBereits");
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Lesen vom Client (fuegeMitarbeiterHinzu): ");
+			System.out.println(e.getMessage());
+		} 
+
+	}
+
+	private void mitarbeiterBearbeiten(){
+		try{
+			int id = Integer.parseInt(in.readLine());
+			Mitarbeiter m = shop.sucheMitarbeiter(id);
+			// Empfangen der Daten
+			String passwort = in.readLine();
+			String name = in.readLine();
+			MitarbeiterFunktion funktion = MitarbeiterFunktion.valueOf(in.readLine());
+			double gehalt = Double.parseDouble(in.readLine());
+			boolean blockiert = Boolean.valueOf(in.readLine());
+			// Speicheren der Daten
+			m.setPasswort(passwort);
+			m.setName(name);
+			m.setFunktion(funktion);
+			m.setGehalt(gehalt);
+			m.setBlockiert(blockiert);
+
+			out.println("OK");
+		} catch (MitarbeiterExistiertNichtException e){ 
+			out.println("MitarbeiterExistiertNicht");
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterBearbeiten): ");
+			System.out.println(e.getMessage());
+		} 
+	}
+
+	private void mitarbeiterLoeschen(){
+		try {
+			int id = Integer.parseInt(in.readLine());
+			Mitarbeiter m = shop.sucheMitarbeiter(id);
+			shop.mitarbeiterLoeschen(m);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (Exception e){
+			System.out.println("--->Fehler beim Loeschen von Mitarbeiter: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void schreibeMitarbeiter(){
+		try {
+			shop.schreibeMitarbeiter();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Mitarbeitern: ");
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void sendeMitarbeiter(Mitarbeiter m){
+		out.println(m.getId());
+		out.println(m.getUsername());
+		out.println(m.getPasswort());
+		out.println(m.getName());
+		out.println(m.getFunktion());
+		out.println(m.getGehalt());
+		out.println(m.getBlockiert());
+	}
+	
+	
+	//////// Ereignisse ////////
+	
+	private void schreibeEreignisse(){
+		try {
+			shop.schreibeEreignisse();
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim schreiben von Ereignissen: ");
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void gibBestandsHistorie(){
+		try {
+			int artikelnummer = Integer.parseInt(in.readLine());
+			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
+			String bestandshistorie = shop.gibBestandsHistorie(a);
+			out.println(bestandshistorie);
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (ArtikelExistiertNichtException e){
+			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void gibBestandsHistorieDaten(){
+		try {
+			int artikelnummer = Integer.parseInt(in.readLine());
+			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
+			int[] daten = shop.gibBestandsHistorieDaten(a);
+			out.println(daten.length);
+			for (int i = 0; i < daten.length; i++){
+				out.println(daten[i]);
+			}
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println(e.getMessage());
+		} catch (ArtikelExistiertNichtException e){
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void gibLogDatei(){
+		try {
+			String logDatei = shop.gibLogDatei();
+			String[] eintraege = logDatei.split("\n");
+			out.println(eintraege.length);
+			for(int i = 0; i < eintraege.length; i++){
+				out.println(eintraege[i]);
+			}
+		} catch (IOException e) {
+			System.out.println("--->Fehler beim Lesen der LogDatei: ");
+			System.out.println(e.getMessage());
 		}
 	}
 	

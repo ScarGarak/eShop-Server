@@ -16,7 +16,7 @@ import shop.server.domain.ShopVerwaltung;
  * weitere Kommunikation mit dem Client Ÿber das mitgegebene Socket-Objekt 
  * Ÿbernimmt. 
  * Danach wartet der Server weiter auf Verbindungen und wiederholt den obigen
- * Prozess.
+ * Prozess. 
  *  
  */
 public class ShopServer { 					
