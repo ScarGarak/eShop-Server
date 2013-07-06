@@ -1047,8 +1047,7 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorie(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
@@ -1062,8 +1061,7 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");

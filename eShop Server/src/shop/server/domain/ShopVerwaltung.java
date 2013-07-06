@@ -84,8 +84,16 @@ public class ShopVerwaltung implements ShopInterface{
 		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
 		
 		meineKunden = new KundenVerwaltung();
-		meineKunden.liesDaten(kundenDateiname);
-		kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
+		//meineKunden.liesDaten(kundenDateiname);
+		//kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
+		try {
+			meineKunden.einfuegen(new Kunde(1, "hans", "123", "Hans Meiser", "Blubweg 5", 28201, "Bremen"));
+			meineKunden.einfuegen(new Kunde(2, "bernd", "123", "Bernd", "Siegesstra§e", 30827, "Hannover"));
+		} catch (KundeExistiertBereitsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		meineKunden.schreibeDaten(kundenDateiname);
 		
 		meineEreignisse = new EreignisVerwaltung();
 	}
