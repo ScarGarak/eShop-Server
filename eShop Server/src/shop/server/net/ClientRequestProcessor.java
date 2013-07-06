@@ -28,7 +28,6 @@ import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.common.valueobjects.Person;
 import shop.common.valueobjects.Rechnung;
 import shop.common.valueobjects.WarenkorbArtikel;
-import shop.server.domain.ShopVerwaltung;
 
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
@@ -978,14 +977,13 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorie(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
 			System.out.println(e.getMessage());
-		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+		} catch (ArtikelExistiertNichtException e) {
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
 			System.out.println(e.getMessage());
 		}
 	}
@@ -993,14 +991,16 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
-			out.println(bestandshistorie);
+			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
+			out.println(daten.length);
+			for (int i = 0; i < daten.length; i++){
+				out.println(daten[i]);
+			}
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
+			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
 			System.out.println(e.getMessage());
 		}
 	}
