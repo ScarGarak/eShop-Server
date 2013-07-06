@@ -411,12 +411,12 @@ public class ShopVerwaltung implements ShopInterface{
 		meineEreignisse.schreibeDaten(logDateiname);
 	}
 	
-	public String gibBestandsHistorie(Artikel artikel) throws IOException{
-		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
+	public String gibBestandsHistorie(int artikelnummer) throws IOException, ArtikelExistiertNichtException {
+		return meineEreignisse.gibBestandsHistorie(this.gibArtikel(artikelnummer), logDateiname);
 	}
 	
-	public int[] gibBestandsHistorieDaten(Artikel artikel) throws IOException{
-		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
+	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException {
+		return meineEreignisse.gibBestandsHistorieDaten(this.gibArtikel(artikelnummer), logDateiname);
 	}
 	
 	public String gibLogDatei() throws IOException{

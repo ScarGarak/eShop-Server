@@ -196,6 +196,22 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("gl")) {
 				gibLogDatei();
 			}
+			else if (input.equals("lv")) {
+				// Aktion "login vergessen" ausgewählt
+				System.out.println("server lv");
+				loginVergessen();
+			}
+			else if (input.equals("kb")) {
+				// Aktion "Buch _e_infügen" gewählt
+				kundenBearbeiten();
+			} /*else if (input.equals("f")) {
+				// Aktion "Bücher _f_inden" (suchen) gewählt
+				suchen();
+			}
+			else if (input.equals("s")) {
+				// Aktion "_s_peichern" gewählt
+				speichern();
+			}*/
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -206,6 +222,28 @@ class ClientRequestProcessor implements Runnable {
 		disconnect();		
 	}
 	
+	private void loginVergessen() {
+		Kunde k = null;
+		try {
+		String name = in.readLine();
+		String strasse = in.readLine();
+		int zip = Integer.parseInt(in.readLine());
+		String wohnort = in.readLine();
+		k = shop.loginVergessen(name, strasse, zip, wohnort);
+		System.out.println("login vergessen kunde k: " + k);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (k !=null) {
+//			kunden suche erfolgreich
+			out.println("kse");
+			sendeKunde(k);
+		} else {
+			out.println("ken");
+		}
+	}
 	private void fuegeKundenHinzu() {
 		String input = null;
 		String ergebnis = null;
@@ -904,6 +942,27 @@ class ClientRequestProcessor implements Runnable {
 
 	}
 
+	private void kundenBearbeiten() {
+		try {
+			int id = Integer.parseInt(in.readLine());
+			String passwort = in.readLine();
+			String name = in.readLine();
+			String strasse = in.readLine();
+			int plz = Integer.parseInt(in.readLine());
+			String wohnort = in.readLine();
+			boolean blockiert = Boolean.valueOf(in.readLine());
+			try {
+				shop.kundenBearbeiten(id, passwort, name, strasse, plz, wohnort, blockiert);
+			} catch (KundeExistiertNichtException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private void mitarbeiterBearbeiten(){
 		try{
 			int id = Integer.parseInt(in.readLine());
@@ -953,6 +1012,16 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 
+	private void sendeKunde(Kunde k) {
+		out.println(k.getId());
+		out.println(k.getUsername());
+		out.println(k.getPasswort());
+		out.println(k.getName());
+		out.println(k.getStrasse());
+		out.println(k.getPlz());
+		out.println(k.getWohnort());
+	}
+	
 	private void sendeMitarbeiter(Mitarbeiter m){
 		out.println(m.getId());
 		out.println(m.getUsername());
@@ -978,8 +1047,7 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorie(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
@@ -993,8 +1061,7 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			Artikel a = ((ShopVerwaltung) shop).gibArtikel(artikelnummer);
-			String bestandshistorie = shop.gibBestandsHistorie(a);
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
 			out.println(bestandshistorie);
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
