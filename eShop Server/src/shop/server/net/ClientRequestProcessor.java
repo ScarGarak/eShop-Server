@@ -122,6 +122,9 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
 			}
+			else if (input.equals("abv")) {
+				artikelBestandVeraendern();
+			}
 			else if (input.equals("gaasna")) {
 				gibAlleArtikelSortiertNachArtikelnummer();
 			}
@@ -133,6 +136,9 @@ class ClientRequestProcessor implements Runnable {
 			}
 			else if (input.equals("sab")) {
 				sucheArtikelNachBezeichnung();
+			}
+			else if (input.equals("ab")) {
+				artikelBearbeiten();
 			}
 			else if (input.equals("ea")) {
 				entferneArtikel();
@@ -463,6 +469,49 @@ class ClientRequestProcessor implements Runnable {
 		} 
 	}
 	
+	private void artikelBestandVeraendern() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die ID des Mitarbeiters:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (ID Mitarbeiter): ");
+			System.out.println(e.getMessage());
+		}
+		int id = Integer.parseInt(input);
+
+		// dann die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+		
+		// dann die Anzahl:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Anzahl): ");
+			System.out.println(e.getMessage());
+		}
+		int anzahl = Integer.parseInt(input);
+
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.artikelBestandVeraendern(shop.sucheMitarbeiter(id), artikelnummer, anzahl);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
+			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
+		} catch (MitarbeiterExistiertNichtException e) {
+			out.println("MitarbeiterExistiertNichtException");
+		} 
+	}
+	
 	private void gibAlleArtikelSortiertNachArtikelnummer() {
 		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
 		List<Artikel> artikel = null;
@@ -515,6 +564,46 @@ class ClientRequestProcessor implements Runnable {
 		artikel = shop.sucheArtikel(bezeichnung);
 
 		sendeArtikelAnClient(artikel);
+	}
+	
+	private void artikelBearbeiten() {
+		String input = null;
+		// lese die notwendigen Parameter, einzeln pro Zeile
+		// zuerst die Artikelnummer:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out
+					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println(e.getMessage());
+		}
+		int artikelnummer = Integer.parseInt(input);
+
+		// dann den Preis:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Preis): ");
+			System.out.println(e.getMessage());
+		}
+		double preis = Double.parseDouble(input);
+		
+		// dann die Bezeichnung:
+		try {
+			input = in.readLine();
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Lesen vom Client (Bezeichnung): ");
+			System.out.println(e.getMessage());
+		}
+		String bezeichnung = new String(input);
+		
+		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
+		try {
+			shop.artikelBearbeiten(artikelnummer, preis, bezeichnung);
+			out.println("Erfolg");
+		} catch (ArtikelExistiertNichtException e) {
+			out.println("ArtikelExistiertNichtException");
+		} 
 	}
 	
 	private void entferneArtikel() {
