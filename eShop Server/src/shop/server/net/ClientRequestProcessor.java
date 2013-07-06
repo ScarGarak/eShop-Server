@@ -272,6 +272,7 @@ class ClientRequestProcessor implements Runnable {
 			default: 
 				break;
 		}
+		out.println(p.getBlockiert());
 	}
 	
 	/*
