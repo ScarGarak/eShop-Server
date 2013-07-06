@@ -252,6 +252,8 @@ class ClientRequestProcessor implements Runnable {
 		Person p = shop.pruefeLogin(username, password);
 		if (p != null) {
 			sendePersonAnClient(p);
+		} else {
+			out.println("Fehler");
 		}
 	}
 	
