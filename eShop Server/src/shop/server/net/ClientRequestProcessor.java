@@ -196,22 +196,11 @@ class ClientRequestProcessor implements Runnable {
 				gibLogDatei();
 			}
 			else if (input.equals("lv")) {
-				// Aktion "login vergessen" ausgewählt
-				System.out.println("server lv");
 				loginVergessen();
 			}
-
 			else if (input.equals("kb")) {
-				// Aktion "Buch _e_infügen" gewählt
 				kundenBearbeiten();
-			} /*else if (input.equals("f")) {
-				// Aktion "Bücher _f_inden" (suchen) gewählt
-				suchen();
-			}
-			else if (input.equals("s")) {
-				// Aktion "_s_peichern" gewählt
-				speichern();
-			}*/
+			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -221,7 +210,6 @@ class ClientRequestProcessor implements Runnable {
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
 	}
-	
 	
 	private void loginVergessen() {
 		Kunde k = null;
@@ -958,7 +946,7 @@ class ClientRequestProcessor implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} catch (IOException e){
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NumberFormatException e) {
@@ -1065,6 +1053,8 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
+			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
+			out.println(bestandshistorie);
 			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
 			out.println(daten.length);
 			for (int i = 0; i < daten.length; i++){
