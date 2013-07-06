@@ -3,6 +3,7 @@ package shop.server.domain;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import shop.common.exceptions.ArtikelBestandIstKeineVielfacheDerPackungsgroesseException;
@@ -131,6 +132,14 @@ public class KundenVerwaltung {
 		return kopie;
 		
 	}	
+	
+	public List<WarenkorbArtikel> gibWarenkorb(Kunde kunde) {
+		return kunde.getWarenkorb();
+	}
+	
+	public WarenkorbArtikel gibWarenkorbArtikel(Kunde kunde, Artikel artikel) throws ArtikelExistiertNichtException {
+		return warenkorbVerwaltung.getWarenkorbArtikel(kunde, artikel);
+	}
 	
 	public void inDenWarenkorbLegen(Kunde kunde, WarenkorbArtikel warenkorbArtikel) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		warenkorbVerwaltung.hinzufuegen(kunde, warenkorbArtikel);
