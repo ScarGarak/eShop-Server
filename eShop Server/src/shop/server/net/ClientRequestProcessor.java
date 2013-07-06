@@ -1142,8 +1142,6 @@ class ClientRequestProcessor implements Runnable {
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
 			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
 			out.println(daten.length);
 			for (int i = 0; i < daten.length; i++){
