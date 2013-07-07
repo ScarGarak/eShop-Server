@@ -140,9 +140,7 @@ public class ShopVerwaltung implements ShopInterface{
 	}
 
 	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException {
-		Artikel artikel = gibArtikel(artikelnummer);
-		artikel.setPreis(preis);
-		artikel.setBezeichnung(bezeichnung);
+		meineArtikel.bearbeiten(artikelnummer, preis, bezeichnung);
 	}
 	
 	public void entferneArtikel(Mitarbeiter mitarbeiter, int artikelnummer) throws ArtikelExistiertNichtException, IOException {
@@ -197,9 +195,12 @@ public class ShopVerwaltung implements ShopInterface{
 	public void fuegeMitarbeiterHinzu(String username, String passwort, String name, MitarbeiterFunktion funktion, double gehalt) throws MitarbeiterExistiertBereitsException, UsernameExistiertBereitsException{
 		this.existiertUsernameSchon(username, " - in fuegeMitarbeiterHinzu() !");
 		
-		Mitarbeiter m = new Mitarbeiter(mitarbeiterNextId, username, passwort, name, funktion, gehalt);
+		Mitarbeiter m = null;
+		synchronized(this){
+			m = new Mitarbeiter(mitarbeiterNextId, username, passwort, name, funktion, gehalt);
+			mitarbeiterNextId++;
+		}
 		meineMitarbeiter.einfuegen(m);
-		mitarbeiterNextId++;
 	}
 
 	/**
@@ -221,11 +222,7 @@ public class ShopVerwaltung implements ShopInterface{
 	 * @throws MitarbeiterExistiertNichtException
 	 */
 	public void mitarbeiterBearbeiten(int id, String passwort, String name, MitarbeiterFunktion funktion, double gehalt, boolean blockiert) throws MitarbeiterExistiertNichtException{
-		Mitarbeiter m = sucheMitarbeiter(id);
-		m.setPasswort(passwort);
-		m.setFunktion(funktion);
-		m.setGehalt(gehalt);
-		m.setBlockiert(blockiert);
+		meineMitarbeiter.bearbeiten(id, passwort, name, funktion, gehalt, blockiert);
 	}
 	
 	/**
@@ -291,9 +288,13 @@ public class ShopVerwaltung implements ShopInterface{
 	public void fuegeKundenHinzu(String username, String passwort, String name, String strasse, int plz, String wohnort) throws KundeExistiertBereitsException, UsernameExistiertBereitsException{
 		this.existiertUsernameSchon(username, " - in fuegeKundenHinzu() !");
 		
-		Kunde k = new Kunde(kundenNextId, username, passwort, name, strasse, plz, wohnort);
+		Kunde k = null;
+		synchronized(this){
+			k = new Kunde(kundenNextId, username, passwort, name, strasse, plz, wohnort);
+			kundenNextId++;
+		}
 		meineKunden.einfuegen(k);
-		kundenNextId++;
+		
 	}
 	
 	/**
@@ -307,14 +308,8 @@ public class ShopVerwaltung implements ShopInterface{
 	 * @param blockiert
 	 * @throws KundeExistiertNichtException
 	 */
-	public void kundenBearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException{
-		Kunde k = sucheKunde(id);
-		k.setPasswort(passwort);
-		k.setName(name);
-		k.setStrasse(strasse);
-		k.setPlz(plz);
-		k.setWohnort(wohnort);
-		k.setBlockiert(blockiert);
+	public void kundenBearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException {
+		meineKunden.bearbeiten(id, passwort, name, strasse, plz, wohnort, blockiert);
 	}
 
 	/**
