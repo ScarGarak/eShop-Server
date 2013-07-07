@@ -193,9 +193,6 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("se")) {
 				schreibeEreignisse();
 			}
-			else if (input.equals("gbh")) {
-				gibBestandsHistorie();
-			}
 			else if (input.equals("gbhd")) {
 				gibBestandsHistorieDaten();
 			}
@@ -1101,9 +1098,10 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			shop.schreibeMitarbeiter();
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Mitarbeitern: ");
-			System.out.println(e.getMessage());
+			out.println("IOException");
+			return;
 		}
+		out.println("OK");
 	}
 
 	public void sucheKunde() {
@@ -1202,33 +1200,17 @@ class ClientRequestProcessor implements Runnable {
 			System.out.println(e.getMessage());
 		}
 	}
-
-	private void gibBestandsHistorie(){
-		try {
-			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
-			System.out.println(e.getMessage());
-		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
-			System.out.println(e.getMessage());
-		}
-	}
 	
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
 			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
 			out.println(daten.length);
 			for (int i = 0; i < daten.length; i++){
 				out.println(daten[i]);
 			}
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println("--->Fehler beim Lesen vom Client (gibBestandsHistorieDaten): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
 			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
@@ -1245,8 +1227,7 @@ class ClientRequestProcessor implements Runnable {
 				out.println(eintraege[i]);
 			}
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen der LogDatei: ");
-			System.out.println(e.getMessage());
+			out.println("IOException");
 		}
 	}
 	
