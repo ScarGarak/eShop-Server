@@ -677,8 +677,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);

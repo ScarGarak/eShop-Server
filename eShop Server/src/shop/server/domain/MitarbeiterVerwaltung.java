@@ -16,9 +16,7 @@ import shop.server.persistence.data.ObjectDataPersistenceManager;
  * es Mitarbeiter zu suchen, hinzuzufügen und zu löschen.
  * 
  * @author Angelo
- * @version 1
  * 
- * Zuletzt editiert: 11.05.2013
  */
 
 public class MitarbeiterVerwaltung {
