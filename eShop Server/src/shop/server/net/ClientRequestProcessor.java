@@ -7,7 +7,10 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.Vector;
+
+import java.util.Timer;
 
 import shop.common.exceptions.ArtikelBestandIstKeineVielfacheDerPackungsgroesseException;
 import shop.common.exceptions.ArtikelBestandIstZuKleinException;
@@ -43,12 +46,18 @@ import shop.common.valueobjects.WarenkorbArtikel;
  * @author teschke, eirund
  */
 class ClientRequestProcessor implements Runnable {
+	
+	private static final int WARENKORBLEERENTIMERDELAY = 15000;
 
 	// Liste mit all den aktiven Clients
-//	private Vector<Socket> activeClients;
+//		private Vector<Socket> activeClients;
 	
 	// Shopverwaltungsobjekt, das die eigentliche Arbeit machen soll
 	private ShopInterface shop; 
+	
+	private Kunde kunde;
+	private Timer warenkorbLeerenTimer;
+	private TimerTask warenkorbLeerenTimerTask;
 
 	// Datenstrukturen fŸr die Kommunikation
 	private Socket clientSocket;
@@ -68,6 +77,7 @@ class ClientRequestProcessor implements Runnable {
 //		activeClients = clients;
 		shop = shopVerwaltung;
 		clientSocket = socket;
+		kunde = null;
 //		updatePort = port;
 
 		// I/O-Streams initialisieren und ClientRequestProcessor-Objekt als Thread starten:
@@ -84,7 +94,11 @@ class ClientRequestProcessor implements Runnable {
 			System.err.println("Ausnahme bei Bereitstellung des Streams: " + e);
 			return;
 		}
-
+		
+		warenkorbLeerenTimer = new Timer();
+		warenkorbLeerenTimerTask = new WarenkorbLeerenTimer(shop, kunde);
+		
+		
 		System.out.println("Verbunden mit " + clientSocket.getInetAddress()
 				+ ":" + clientSocket.getPort());
 	}
@@ -106,6 +120,12 @@ class ClientRequestProcessor implements Runnable {
 			// Aktion vom Client einlesen [dann ggf. weitere Daten einlesen ...]
 			try {
 				input = in.readLine();
+				if(kunde != null){
+					resetWarenkorbLeerenTimer();
+					if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+						warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+					}
+				}
 			} catch (Exception e) {
 				System.out.println("--->Fehler beim Lesen vom Client (Aktion): ");
 				System.out.println(e.getMessage());
@@ -125,10 +145,14 @@ class ClientRequestProcessor implements Runnable {
 			// Artikel-Methode 
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
+
+
 			}
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
+
 			}
+
 			else if (input.equals("abv")) {
 				artikelBestandVeraendern();
 			}
@@ -199,36 +223,32 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("se")) {
 				schreibeEreignisse();
 			}
-			else if (input.equals("gbh")) {
-				gibBestandsHistorie();
-			}
 			else if (input.equals("gbhd")) {
 				gibBestandsHistorieDaten();
 			}
 			else if (input.equals("gl")) {
 				gibLogDatei();
 			}
+			
 			else if (input.equals("lv")) {
 				loginVergessen();
 			}
 			else if (input.equals("kb")) {
 				kundenBearbeiten();
-			} 
-			else if (input.equals("sk")) {
+			} else if (input.equals("sk")) {
 				sucheKunde();
 			}
 			else if (input.equals("gak")) {
 				gibAlleKunden();
-			}
-			else if (input.equals("kl")) {
+			}else if (input.equals("kl")) {
 				kundenLoeschen();
-			}
-			else if (input.equals("sk")) {
+			}else if (input.equals("sck")) {
 				schreibeKunden();
 			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
+
 		} while (!(input.equals("q")));
 
 		// Verbindung wurde vom Client abgebrochen:
@@ -236,28 +256,28 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 //	private void notifyClients(String aktion) {
-//		// Output-Stream initialisieren:
-//		PrintStream cout;
-//		for (int i = 0; i < activeClients.size(); i++) {
-//			try {
-//				// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
-//				cout = new PrintStream(activeClients.get(i).getOutputStream());
-//				// Kennzeichen fŸr gewŠhlte Aktion senden
-//				cout.println(aktion);
-//			} catch (IOException e) {
-//				System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
-//				// Wenn im "try"-Block Fehler auftreten, dann Client-Socket schließen:
-//				if (activeClients.get(i) != null)
-//					try {
-//						activeClients.get(i).close();
-//					} catch (IOException e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
-//				System.err.println("Client-Socket geschlossen");
-//			}
+//	// Output-Stream initialisieren:
+//	PrintStream cout;
+//	for (int i = 0; i < activeClients.size(); i++) {
+//		try {
+//			// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
+//			cout = new PrintStream(activeClients.get(i).getOutputStream());
+//			// Kennzeichen fŸr gewŠhlte Aktion senden
+//			cout.println(aktion);
+//		} catch (IOException e) {
+//			System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
+//			// Wenn im "try"-Block Fehler auftreten, dann Client-Socket schließen:
+//			if (activeClients.get(i) != null)
+//				try {
+//					activeClients.get(i).close();
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//			System.err.println("Client-Socket geschlossen");
 //		}
 //	}
+//}
 	
 	private void loginVergessen() {
 		Kunde k = null;
@@ -574,6 +594,7 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void gibAlleArtikelSortiertNachBezeichnung() {
+		
 		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
 		List<Artikel> artikel = null;
 		artikel = shop.gibAlleArtikelSortiertNachBezeichnung();
@@ -582,6 +603,13 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void sucheArtikelNachArtikelnummer() {
+		if(kunde != null){
+			resetWarenkorbLeerenTimer();
+			if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+				warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+			}
+		}
+		
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die Artikelnummer der gesuchten Artikel erforderlich:
@@ -768,7 +796,7 @@ class ClientRequestProcessor implements Runnable {
 			shop.inDenWarenkorbLegen(shop.sucheKunde(id), artikelnummer, stueckzahl);
 			out.println("Erfolg");
 //			// Benachrichtige Clients dass Sie ihre Artikel Tabelle updaten sollen
-//			notifyClients("uat"); // (U)pdate(A)rtikel(T)able -> "uat"			
+//			notifyClients("uat"); // (U)pdate(A)rtikel(T)able -> "uat"	
 		} catch (ArtikelBestandIstZuKleinException e) {
 			out.println("ArtikelBestandIstZuKleinException");
 		} catch (ArtikelExistiertNichtException e) {
@@ -777,6 +805,14 @@ class ClientRequestProcessor implements Runnable {
 			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
 		} catch (KundeExistiertNichtException e) {
 			out.println("KundeExistiertNichtException");
+		}
+		
+		// Starte Timer:
+		if(kunde != null){
+			resetWarenkorbLeerenTimer();
+			if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+				warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+			}
 		}
 	}
 	
@@ -862,6 +898,9 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void kaufen() {
+		//Stoppe Timer
+		resetWarenkorbLeerenTimer();
+		
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die ID des Kunden erforderlich:
@@ -888,6 +927,8 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void leeren() {
+		resetWarenkorbLeerenTimer();
+
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die ID des Kunden erforderlich:
@@ -907,6 +948,7 @@ class ClientRequestProcessor implements Runnable {
 			out.println("ArtikelBestandIstKeineVielfacheDerPackungsgroesseException");
 		} catch (KundeExistiertNichtException e) {
 			out.println("KundeExistiertNichtException");
+
 		}
 	}
 	
@@ -925,6 +967,8 @@ class ClientRequestProcessor implements Runnable {
 				out.println(((Kunde) p).getPlz());
 				// Wohnort des Kunden senden
 				out.println(((Kunde) p).getWohnort());
+				kunde = ((Kunde)p);
+				resetWarenkorbLeerenTimer();
 				break;
 			case Mitarbeiter: 
 				// Funktion des Mitarbeiters senden
@@ -1077,7 +1121,9 @@ class ClientRequestProcessor implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+
 		} catch (NumberFormatException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1127,9 +1173,10 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			shop.schreibeMitarbeiter();
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Mitarbeitern: ");
-			System.out.println(e.getMessage());
+			out.println("IOException");
+			return;
 		}
+		out.println("OK");
 	}
 
 	public void sucheKunde() {
@@ -1153,8 +1200,10 @@ class ClientRequestProcessor implements Runnable {
 		
 		if (k != null) {
 			out.println("kse");
+			out.print(k.getId());
 			sendeKunde(k);
-		} else {out.println("ksf");
+		} else {
+			out.println("ksf");
 		}
 	}
 	
@@ -1169,6 +1218,7 @@ class ClientRequestProcessor implements Runnable {
 			Kunde k = iter.next();
 			out.println(k.getId());
 			sendeKunde(k);
+			out.println(k.getBlockiert());
 		}
 	}
 	
@@ -1202,7 +1252,6 @@ class ClientRequestProcessor implements Runnable {
 		out.println(k.getStrasse());
 		out.println(k.getPlz());
 		out.println(k.getWohnort());
-		out.println(k.getBlockiert());
 	}
 	
 	private void sendeMitarbeiter(Mitarbeiter m){
@@ -1226,33 +1275,17 @@ class ClientRequestProcessor implements Runnable {
 			System.out.println(e.getMessage());
 		}
 	}
-
-	private void gibBestandsHistorie(){
-		try {
-			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
-			System.out.println(e.getMessage());
-		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
-			System.out.println(e.getMessage());
-		}
-	}
 	
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
 			int[] daten = shop.gibBestandsHistorieDaten(artikelnummer);
 			out.println(daten.length);
 			for (int i = 0; i < daten.length; i++){
 				out.println(daten[i]);
 			}
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
+			System.out.println("--->Fehler beim Lesen vom Client (gibBestandsHistorieDaten): ");
 			System.out.println(e.getMessage());
 		} catch (ArtikelExistiertNichtException e){
 			System.out.println("--->Fehler beim Senden der Bestandshistoriedaten: ");
@@ -1269,9 +1302,13 @@ class ClientRequestProcessor implements Runnable {
 				out.println(eintraege[i]);
 			}
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen der LogDatei: ");
-			System.out.println(e.getMessage());
+			out.println("IOException");
 		}
+	}
+
+	private void resetWarenkorbLeerenTimer(){
+		warenkorbLeerenTimerTask.cancel();
+		warenkorbLeerenTimerTask = new WarenkorbLeerenTimer(shop, kunde);
 	}
 	
 	private void disconnect() {
@@ -1279,7 +1316,7 @@ class ClientRequestProcessor implements Runnable {
 			out.println("Tschuess!");
 //			activeClients.remove(clientUpdateSocket);
 			clientSocket.close();
-			
+
 			System.out.println("Verbindung zu " + clientSocket.getInetAddress()
 					+ ":" + clientSocket.getPort() + " durch Client abgebrochen");
 		} catch (Exception e) {
