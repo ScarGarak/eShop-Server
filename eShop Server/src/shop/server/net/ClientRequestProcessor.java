@@ -767,6 +767,7 @@ class ClientRequestProcessor implements Runnable {
 		
 		// Starte Timer:
 		if(kunde != null){
+			resetWarenkorbLeerenTimer();
 			if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
 				warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
 			}
