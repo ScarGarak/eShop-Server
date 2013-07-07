@@ -278,6 +278,30 @@ class ClientRequestProcessor implements Runnable {
 //	}
 //}
 	
+//	private void notifyClients(String aktion) {
+//	// Output-Stream initialisieren:
+//	PrintStream cout;
+//	for (int i = 0; i < activeClients.size(); i++) {
+//		try {
+//			// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
+//			cout = new PrintStream(activeClients.get(i).getOutputStream());
+//			// Kennzeichen fŸr gewŠhlte Aktion senden
+//			cout.println(aktion);
+//		} catch (IOException e) {
+//			System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
+//			// Wenn im "try"-Block Fehler auftreten, dann Client-Socket schließen:
+//			if (activeClients.get(i) != null)
+//				try {
+//					activeClients.get(i).close();
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//			System.err.println("Client-Socket geschlossen");
+//		}
+//	}
+//}
+	
 	private void loginVergessen() {
 		Kunde k = null;
 		try {
