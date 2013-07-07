@@ -7,7 +7,10 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.Vector;
+
+import java.util.Timer;
 
 import shop.common.exceptions.ArtikelBestandIstKeineVielfacheDerPackungsgroesseException;
 import shop.common.exceptions.ArtikelBestandIstZuKleinException;
@@ -43,9 +46,15 @@ import shop.common.valueobjects.WarenkorbArtikel;
  * @author teschke, eirund
  */
 class ClientRequestProcessor implements Runnable {
+	
+	private static final int WARENKORBLEERENTIMERDELAY = 15000;
 
 	// Shopverwaltungsobjekt, das die eigentliche Arbeit machen soll
 	private ShopInterface shop; 
+	
+	private Kunde kunde;
+	private Timer warenkorbLeerenTimer;
+	private TimerTask warenkorbLeerenTimerTask;
 
 	// Datenstrukturen fŸr die Kommunikation
 	private Socket clientSocket;
@@ -62,6 +71,7 @@ class ClientRequestProcessor implements Runnable {
 
 		shop = shopVerwaltung;
 		clientSocket = socket;
+		kunde = null;
 
 		// I/O-Streams initialisieren und ClientRequestProcessor-Objekt als Thread starten:
 		try {
@@ -77,7 +87,11 @@ class ClientRequestProcessor implements Runnable {
 			System.err.println("Ausnahme bei Bereitstellung des Streams: " + e);
 			return;
 		}
-
+		
+		warenkorbLeerenTimer = new Timer();
+		warenkorbLeerenTimerTask = new WarenkorbLeerenTimer(shop, kunde);
+		
+		
 		System.out.println("Verbunden mit " + clientSocket.getInetAddress()
 				+ ":" + clientSocket.getPort());
 	}
@@ -99,6 +113,12 @@ class ClientRequestProcessor implements Runnable {
 			// Aktion vom Client einlesen [dann ggf. weitere Daten einlesen ...]
 			try {
 				input = in.readLine();
+				if(kunde != null){
+					resetWarenkorbLeerenTimer();
+					if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+						warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+					}
+				}
 			} catch (Exception e) {
 				System.out.println("--->Fehler beim Lesen vom Client (Aktion): ");
 				System.out.println(e.getMessage());
@@ -345,7 +365,6 @@ class ClientRequestProcessor implements Runnable {
 			sendePersonAnClient(p);
 		} else {
 			out.println("Fehler");
-
 		}
 	}
 	
@@ -530,6 +549,7 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void gibAlleArtikelSortiertNachBezeichnung() {
+		
 		// die eigentliche Arbeit soll das Shopverwaltungsobjekt machen:
 		List<Artikel> artikel = null;
 		artikel = shop.gibAlleArtikelSortiertNachBezeichnung();
@@ -538,6 +558,13 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void sucheArtikelNachArtikelnummer() {
+		if(kunde != null){
+			resetWarenkorbLeerenTimer();
+			if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+				warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+			}
+		}
+		
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die Artikelnummer der gesuchten Artikel erforderlich:
@@ -734,6 +761,13 @@ class ClientRequestProcessor implements Runnable {
 		} catch (KundeExistiertNichtException e) {
 			out.println("KundeExistiertNichtException");
 		}
+		
+		// Starte Timer:
+		if(kunde != null){
+			if(shop.gibWarenkorb(kunde) != null && shop.gibWarenkorb(kunde).size() != 0){
+				warenkorbLeerenTimer.schedule(warenkorbLeerenTimerTask, WARENKORBLEERENTIMERDELAY);
+			}
+		}
 	}
 	
 	private void ausDemWarenkorbHerausnehmen() {
@@ -818,6 +852,9 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void kaufen() {
+		//Stoppe Timer
+		resetWarenkorbLeerenTimer();
+		
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die ID des Kunden erforderlich:
@@ -844,6 +881,8 @@ class ClientRequestProcessor implements Runnable {
 	}
 	
 	private void leeren() {
+		resetWarenkorbLeerenTimer();
+
 		String input = null;
 		// lese die notwendigen Parameter, einzeln pro Zeile
 		// hier ist nur die ID des Kunden erforderlich:
@@ -882,6 +921,8 @@ class ClientRequestProcessor implements Runnable {
 				out.println(((Kunde) p).getPlz());
 				// Wohnort des Kunden senden
 				out.println(((Kunde) p).getWohnort());
+				kunde = ((Kunde)p);
+				resetWarenkorbLeerenTimer();
 				break;
 			case Mitarbeiter: 
 				// Funktion des Mitarbeiters senden
@@ -1230,5 +1271,9 @@ class ClientRequestProcessor implements Runnable {
 			out.println("IOException");
 		}
 	}
-	
+
+	private void resetWarenkorbLeerenTimer(){
+		warenkorbLeerenTimerTask.cancel();
+		warenkorbLeerenTimerTask = new WarenkorbLeerenTimer(shop, kunde);
+	}
 }
