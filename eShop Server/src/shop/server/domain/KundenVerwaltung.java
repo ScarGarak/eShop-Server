@@ -80,6 +80,16 @@ public class KundenVerwaltung {
 		}
 	}
 	
+	public synchronized void bearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException {
+		Kunde k = sucheKunde(id);
+		k.setPasswort(passwort);
+		k.setName(name);
+		k.setStrasse(strasse);
+		k.setPlz(plz);
+		k.setWohnort(wohnort);
+		k.setBlockiert(blockiert);
+	}
+	
 	/**
 	 * Method deletes the costumer instance.
 	 * @param k Kunden instance to delete

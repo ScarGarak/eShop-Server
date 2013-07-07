@@ -279,14 +279,8 @@ public class ShopVerwaltung implements ShopInterface{
 	 * @param blockiert
 	 * @throws KundeExistiertNichtException
 	 */
-	public void kundenBearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException{
-		Kunde k = sucheKunde(id);
-		k.setPasswort(passwort);
-		k.setName(name);
-		k.setStrasse(strasse);
-		k.setPlz(plz);
-		k.setWohnort(wohnort);
-		k.setBlockiert(blockiert);
+	public void kundenBearbeiten(int id, String passwort, String name, String strasse, int plz, String wohnort, boolean blockiert) throws KundeExistiertNichtException {
+		meineKunden.bearbeiten(id, passwort, name, strasse, plz, wohnort, blockiert);
 	}
 
 	/**

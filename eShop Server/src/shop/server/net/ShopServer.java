@@ -22,10 +22,13 @@ import shop.server.domain.ShopVerwaltung;
 public class ShopServer { 					
 	
 	public final static int DEFAULT_PORT = 6789;
+//	public final static int UPDATE_PORT = 6790;
 
 	protected int port;
+//	protected int updatePort;
 	protected ServerSocket serverSocket;
 	private ShopInterface shop; 
+	//private Vector<Socket> activeClients;
 
 	/**
 	 * Konstruktor zur Erzeugung des Shopservers.
@@ -34,22 +37,25 @@ public class ShopServer {
 	 *             (wenn 0, wird Default-Port verwendet)
 	 * @throws IOException
 	 */
-	public ShopServer(int port) throws IOException {
+	public ShopServer(int port, int updatePort) throws IOException {
 		
 		shop = new ShopVerwaltung(); 
+//		activeClients = new Vector<Socket>();
 		
 		if (port == 0)
 			port = DEFAULT_PORT;
 		this.port = port;
 		
+//		if (updatePort == 0)
+//			updatePort = UPDATE_PORT;
+//		this.updatePort = updatePort;
+		
 		try {
 			// Server-Socket anlegen
 			serverSocket = new ServerSocket(port);
-			
+						
 			// Serverdaten ausgeben
 			InetAddress ia = InetAddress.getLocalHost();
-//			Diese Anweisung liefert zu meiner überraschung nicht das Gewünschte:
-//			InetAddress ia = serverSocket.getInetAddress();
 			System.out.println("Host: " + ia.getHostName());
 			System.out.println("Server *" + ia.getHostAddress()	+ "* lauscht auf Port " + port);
 		} catch (IOException e) {
@@ -67,6 +73,7 @@ public class ShopServer {
 		try {
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
+//				ClientRequestProcessor c = new ClientRequestProcessor(activeClients, updatePort, clientSocket, shop);
 				ClientRequestProcessor c = new ClientRequestProcessor(clientSocket, shop);
 				Thread t = new Thread(c);
 				t.start();
@@ -75,7 +82,7 @@ public class ShopServer {
 			fail(e, "Fehler w‰hrend des Lauschens auf Verbindungen");
 		}
 	}
-
+	
 	/**
 	 * main()-Methode zum Starten des Servers
 	 * 
@@ -83,6 +90,7 @@ public class ShopServer {
 	 */
 	public static void main(String[] args) {
 		int port = 0;
+		int updatePort = 0;
 		if (args.length == 1) {
 			try {
 				port = Integer.parseInt(args[0]);
@@ -90,8 +98,17 @@ public class ShopServer {
 				port = 0;
 			}
 		}
+		if (args.length == 2) {
+			try {
+				port = Integer.parseInt(args[0]);
+				updatePort = Integer.parseInt(args[1]);
+			} catch (NumberFormatException e) {
+				port = 0;
+				updatePort = 0;
+			}
+		}
 		try {
-			ShopServer server = new ShopServer(port);
+			ShopServer server = new ShopServer(port, updatePort);
 			server.acceptClientConnectRequests();
 		} catch (IOException e) {
 			e.printStackTrace();
