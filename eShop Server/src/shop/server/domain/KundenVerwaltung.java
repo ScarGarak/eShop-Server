@@ -56,7 +56,7 @@ public class KundenVerwaltung {
 		pm.close();
 	}
 	
-	public void schreibeDaten(String dateiName) throws IOException{
+	public synchronized void schreibeDaten(String dateiName) throws IOException{
 		pm.openForWriting(dateiName);
 		
 		if(kundenListe != null){

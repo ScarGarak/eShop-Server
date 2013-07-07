@@ -63,7 +63,7 @@ public class ArtikelVerwaltung {
 	 * @param datei Datei, in die der Artikelbestand geschrieben werden soll
 	 * @throws IOException
 	 */
-	public void schreibeDaten(String datei) throws IOException  {
+	public synchronized void schreibeDaten(String datei) throws IOException  {
 		// PersistenzManager für Schreibvorgänge öffnen
 		pm.openForWriting(datei);
 
@@ -85,7 +85,7 @@ public class ArtikelVerwaltung {
 			throw new ArtikelExistiertBereitsException(artikel, " - in 'einfuegen()'");
 	}
 	
-	public void bestandVeraendern(int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
+	public synchronized void bestandVeraendern(int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		int index = -1;
 
 		Iterator<Artikel> iter = artikelBestand.iterator();
@@ -142,7 +142,7 @@ public class ArtikelVerwaltung {
 		return ergebnis;
 	}
 	
-	public void entfernen(int artikelnummer) throws ArtikelExistiertNichtException {
+	public synchronized void entfernen(int artikelnummer) throws ArtikelExistiertNichtException {
 		int index = -1;
 
 		Iterator<Artikel> iter = artikelBestand.iterator();
@@ -176,6 +176,12 @@ public class ArtikelVerwaltung {
 		ergebnis.addAll(artikelBestand);
 		Collections.sort(ergebnis, new SortierungNachBezeichnung());
 		return ergebnis;
+	}
+	
+	public synchronized void bearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException{
+		Artikel artikel = getArtikel(artikelnummer);
+		artikel.setPreis(preis);
+		artikel.setBezeichnung(bezeichnung);
 	}
 	
 }
