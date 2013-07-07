@@ -47,7 +47,7 @@ import shop.common.valueobjects.WarenkorbArtikel;
  */
 class ClientRequestProcessor implements Runnable {
 	
-	private static final int WARENKORBLEERENTIMERDELAY = 15000;
+	private static final int WARENKORBLEERENTIMERDELAY = 1000*60*15;
 
 	// Shopverwaltungsobjekt, das die eigentliche Arbeit machen soll
 	private ShopInterface shop; 
