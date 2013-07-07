@@ -139,10 +139,13 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
 
+
 			}
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
+
 			}
+
 			else if (input.equals("abv")) {
 				artikelBestandVeraendern();
 			}
@@ -1089,7 +1092,9 @@ class ClientRequestProcessor implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+
 		} catch (NumberFormatException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
