@@ -7,6 +7,7 @@ import java.util.Vector;
 import shop.common.exceptions.MitarbeiterExistiertBereitsException;
 import shop.common.exceptions.MitarbeiterExistiertNichtException;
 import shop.common.valueobjects.Mitarbeiter;
+import shop.common.valueobjects.MitarbeiterFunktion;
 import shop.server.persistence.data.DataPersistenceManager;
 import shop.server.persistence.data.ObjectDataPersistenceManager;
 
@@ -56,7 +57,7 @@ public class MitarbeiterVerwaltung {
 	 * @param dateiName	Dateiname der externen Datenquelle
 	 * @throws IOException
 	 */
-	public void schreibeDaten(String dateiName) throws IOException{
+	public synchronized void schreibeDaten(String dateiName) throws IOException{
 		pm.openForWriting(dateiName);
 		
 		if(mitarbeiterListe != null){
@@ -127,4 +128,23 @@ public class MitarbeiterVerwaltung {
 		return kopie;
 		
 	}
+
+	/**
+	 * Diese Methode wird zum bearbeiten einer Mitarbeiterinstanz genutzt.
+	 * @param id Die ID des Mitarbeiters
+	 * @param passwort	Das Passwort des Mitarbeiters
+	 * @param name Der Name des Mitarbeiters
+	 * @param funktion Die Funktion des Mitarbeiters
+	 * @param gehalt Der Gehalt des Mitarbeiters
+	 * @param blockiert Ob der Mitarbeiter blockiert ist oder nicht
+	 * @throws MitarbeiterExistiertNichtException 
+	 */
+	public synchronized void bearbeiten(int id, String passwort, String name, MitarbeiterFunktion funktion, double gehalt, boolean blockiert) throws MitarbeiterExistiertNichtException{
+		Mitarbeiter m = sucheMitarbeiter(id);
+		m.setPasswort(passwort);
+		m.setFunktion(funktion);
+		m.setGehalt(gehalt);
+		m.setBlockiert(blockiert);
+	}
+	
 }

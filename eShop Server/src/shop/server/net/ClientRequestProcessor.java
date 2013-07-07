@@ -44,11 +44,16 @@ import shop.common.valueobjects.WarenkorbArtikel;
  */
 class ClientRequestProcessor implements Runnable {
 
+	// Liste mit all den aktiven Clients
+//	private Vector<Socket> activeClients;
+	
 	// Shopverwaltungsobjekt, das die eigentliche Arbeit machen soll
 	private ShopInterface shop; 
 
 	// Datenstrukturen fŸr die Kommunikation
 	private Socket clientSocket;
+//	private Socket clientUpdateSocket;
+//	private int updatePort;
 	private BufferedReader in;
 	private PrintStream out;
 	
@@ -60,8 +65,10 @@ class ClientRequestProcessor implements Runnable {
 	 */
 	public ClientRequestProcessor(Socket socket, ShopInterface shopVerwaltung) {
 
+//		activeClients = clients;
 		shop = shopVerwaltung;
 		clientSocket = socket;
+//		updatePort = port;
 
 		// I/O-Streams initialisieren und ClientRequestProcessor-Objekt als Thread starten:
 		try {
@@ -155,7 +162,7 @@ class ClientRequestProcessor implements Runnable {
 				sucheMitarbeiter();
 			}
 			else if (input.equals("ma")) {
-//				gibAlleMitarbeiter();
+				gibAlleMitarbeiter();
 			}
 			else if (input.equals("me")) {
 				fuegeMitarbeiterHinzu();
@@ -206,29 +213,51 @@ class ClientRequestProcessor implements Runnable {
 			}
 			else if (input.equals("kb")) {
 				kundenBearbeiten();
-			} else if (input.equals("sk")) {
-				// Aktion "Bücher _f_inden" (suchen) gewählt
+			} 
+			else if (input.equals("sk")) {
 				sucheKunde();
 			}
 			else if (input.equals("gak")) {
-				// Aktion "_s_peichern" gewählt
 				gibAlleKunden();
-			}else if (input.equals("kl")) {
-				// Aktion "_s_peichern" gewählt
+			}
+			else if (input.equals("kl")) {
 				kundenLoeschen();
-			}else if (input.equals("sk")) {
-				// Aktion "_s_peichern" gewählt
+			}
+			else if (input.equals("sk")) {
 				schreibeKunden();
 			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
-
 		} while (!(input.equals("q")));
 
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
 	}
+	
+//	private void notifyClients(String aktion) {
+//		// Output-Stream initialisieren:
+//		PrintStream cout;
+//		for (int i = 0; i < activeClients.size(); i++) {
+//			try {
+//				// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
+//				cout = new PrintStream(activeClients.get(i).getOutputStream());
+//				// Kennzeichen fŸr gewŠhlte Aktion senden
+//				cout.println(aktion);
+//			} catch (IOException e) {
+//				System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
+//				// Wenn im "try"-Block Fehler auftreten, dann Client-Socket schließen:
+//				if (activeClients.get(i) != null)
+//					try {
+//						activeClients.get(i).close();
+//					} catch (IOException e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
+//				System.err.println("Client-Socket geschlossen");
+//			}
+//		}
+//	}
 	
 	private void loginVergessen() {
 		Kunde k = null;
@@ -348,6 +377,17 @@ class ClientRequestProcessor implements Runnable {
 		Person p = shop.pruefeLogin(username, password);
 		if (p != null) {
 			sendePersonAnClient(p);
+//			// Server-Update-Socket anlegen und lauschen
+//			ServerSocket serverUpdateSocket = null;
+//			try {
+//				serverUpdateSocket = new ServerSocket(updatePort);
+//				clientUpdateSocket = serverUpdateSocket.accept();
+//				activeClients.add(clientUpdateSocket);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			activeClients.add(clientSocket);
 		} else {
 			out.println("Fehler");
 		}
@@ -709,8 +749,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -719,8 +758,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (StŸckzahl): ");
+			System.out.println("--->Fehler beim Lesen vom Client (StŸckzahl): ");
 			System.out.println(e.getMessage());
 		}
 		int stueckzahl = Integer.parseInt(input);
@@ -729,6 +767,8 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			shop.inDenWarenkorbLegen(shop.sucheKunde(id), artikelnummer, stueckzahl);
 			out.println("Erfolg");
+//			// Benachrichtige Clients dass Sie ihre Artikel Tabelle updaten sollen
+//			notifyClients("uat"); // (U)pdate(A)rtikel(T)able -> "uat"			
 		} catch (ArtikelBestandIstZuKleinException e) {
 			out.println("ArtikelBestandIstZuKleinException");
 		} catch (ArtikelExistiertNichtException e) {
@@ -961,20 +1001,6 @@ class ClientRequestProcessor implements Runnable {
 		sendeWarenkorbArtikelAnClient(rechnung.getWarenkorb());
 	}
 	
-	private void disconnect() {
-		try {
-			out.println("Tschuess!");
-			clientSocket.close();
-
-			System.out.println("Verbindung zu " + clientSocket.getInetAddress()
-					+ ":" + clientSocket.getPort() + " durch Client abgebrochen");
-		} catch (Exception e) {
-			System.out.println("--->Fehler beim Beenden der Verbindung: ");
-			System.out.println(e.getMessage());
-			out.println("Fehler");
-		}
-	}
-	
 	//////// Mitarbeiter ////////
 
 	private void sucheMitarbeiter(){
@@ -1140,8 +1166,9 @@ class ClientRequestProcessor implements Runnable {
 
 		out.println(kundenListe.size());
 		while(iter.hasNext()){
-			out.print(iter.next().getId());
-			sendeKunde(iter.next());
+			Kunde k = iter.next();
+			out.println(k.getId());
+			sendeKunde(k);
 		}
 	}
 	
@@ -1175,6 +1202,7 @@ class ClientRequestProcessor implements Runnable {
 		out.println(k.getStrasse());
 		out.println(k.getPlz());
 		out.println(k.getWohnort());
+		out.println(k.getBlockiert());
 	}
 	
 	private void sendeMitarbeiter(Mitarbeiter m){
@@ -1243,6 +1271,21 @@ class ClientRequestProcessor implements Runnable {
 		} catch (IOException e) {
 			System.out.println("--->Fehler beim Lesen der LogDatei: ");
 			System.out.println(e.getMessage());
+		}
+	}
+	
+	private void disconnect() {
+		try {
+			out.println("Tschuess!");
+//			activeClients.remove(clientUpdateSocket);
+			clientSocket.close();
+			
+			System.out.println("Verbindung zu " + clientSocket.getInetAddress()
+					+ ":" + clientSocket.getPort() + " durch Client abgebrochen");
+		} catch (Exception e) {
+			System.out.println("--->Fehler beim Beenden der Verbindung: ");
+			System.out.println(e.getMessage());
+			out.println("Fehler");
 		}
 	}
 	

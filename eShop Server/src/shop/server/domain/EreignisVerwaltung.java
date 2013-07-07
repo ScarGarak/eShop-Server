@@ -40,7 +40,7 @@ public class EreignisVerwaltung {
 	 * @param dateiname Name der Logdatei
 	 * @throws IOException
 	 */
-	public void schreibeDaten(String dateiname) throws IOException{
+	public synchronized void schreibeDaten(String dateiname) throws IOException{
 		this.cleanLogdatei(dateiname);
 		
 		lpm.openForWriting(dateiname);
