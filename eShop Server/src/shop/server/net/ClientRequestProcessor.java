@@ -118,89 +118,14 @@ class ClientRequestProcessor implements Runnable {
 			// Artikel-Methode 
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
-			}
-			else if (input.equals("fme")) {
-				fuegeMassengutartikelEin();
-			}
-			else if (input.equals("abv")) {
-				artikelBestandVeraendern();
-			}
-			else if (input.equals("gaasna")) {
-				gibAlleArtikelSortiertNachArtikelnummer();
-			}
-			else if (input.equals("gaasnb")) {
-				gibAlleArtikelSortiertNachBezeichnung();
-			}
-			else if (input.equals("saa")) {
-				sucheArtikelNachArtikelnummer();
-			}
-			else if (input.equals("sab")) {
-				sucheArtikelNachBezeichnung();
-			}
-			else if (input.equals("ab")) {
-				artikelBearbeiten();
-			}
-			else if (input.equals("ea")) {
-				entferneArtikel();
-			}
-			else if (input.equals("scha")) {
-				schreibeArtikel();
-			}
-			// Mitarbeiter-Methoden
-			else if (input.equals("mf")) {
-				sucheMitarbeiter();
-			}
-			else if (input.equals("ma")) {
-				gibAlleMitarbeiter();
-			}
-			else if (input.equals("me")) {
-				fuegeMitarbeiterHinzu();
-			}
-			else if (input.equals("mb")) {
-				mitarbeiterBearbeiten();
-			}
-			else if (input.equals("ml")) {
-				mitarbeiterLoeschen();
-			}
-			else if (input.equals("sm")) {
-				schreibeMitarbeiter();
-			}
-			// Warenkorb
-			else if (input.equals("gw")) {
-				gibWarenkorb();
-			}
-			else if (input.equals("idwl")) {
-				inDenWarenkorbLegen();
-			}
-			else if (input.equals("adwh")) {
-				ausDemWarenkorbHerausnehmen();
-			}
-			else if (input.equals("sa")) {
-				stueckzahlAendern();
-			}
-			else if (input.equals("k")) {
-				kaufen();
-			}
-			else if (input.equals("l")) {
-				leeren();
-			}
-			// Ereignis-Methoden
-			else if (input.equals("se")) {
-				schreibeEreignisse();
-			}
-			else if (input.equals("gbh")) {
-				gibBestandsHistorie();
-			}
-			else if (input.equals("gbhd")) {
-				gibBestandsHistorieDaten();
-			}
-			else if (input.equals("gl")) {
-				gibLogDatei();
+
 
 			}
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
+
 			}
+
 			else if (input.equals("abv")) {
 				artikelBestandVeraendern();
 			}
@@ -286,10 +211,6 @@ class ClientRequestProcessor implements Runnable {
 			} else if (input.equals("sk")) {
 				sucheKunde();
 			}
-			// Kunden-Methoden
-			else if (input.equals("ke")) {
-				fuegeKundenHinzu();
-			} 
 			else if (input.equals("gak")) {
 				gibAlleKunden();
 			}else if (input.equals("kl")) {
@@ -390,29 +311,6 @@ class ClientRequestProcessor implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			else if (input.equals("kb")) {
-				kundenBearbeiten();
-			}
-			else if (input.equals("sk")) {
-				sucheKunde();
-			}
-			else if (input.equals("gak")) {
-				gibAlleKunden();
-			}
-			else if (input.equals("kl")) {
-				kundenLoeschen();
-			}
-			else if (input.equals("sk")) {
-				schreibeKunden();
-			} 
-			// ---
-			// weitere Server-Dienste ...
-			// ---
-
-		} while (!(input.equals("q")));
-
-		// Verbindung wurde vom Client abgebrochen:
-		disconnect();		
 			ergebnis = "kee";
 		} catch (KundeExistiertBereitsException e) {
 			ergebnis = "keb";
@@ -1153,7 +1051,9 @@ class ClientRequestProcessor implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+
 		} catch (NumberFormatException e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1215,171 +1115,6 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			id = Integer.parseInt(in.readLine());
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private void mitarbeiterBearbeiten(){
-		try{
-			int id = Integer.parseInt(in.readLine());
-			Mitarbeiter m = shop.sucheMitarbeiter(id);
-			// Empfangen der Daten
-			String passwort = in.readLine();
-			String name = in.readLine();
-			MitarbeiterFunktion funktion = MitarbeiterFunktion.valueOf(in.readLine());
-			double gehalt = Double.parseDouble(in.readLine());
-			boolean blockiert = Boolean.valueOf(in.readLine());
-			// Speicheren der Daten
-			m.setPasswort(passwort);
-			m.setName(name);
-			m.setFunktion(funktion);
-			m.setGehalt(gehalt);
-			m.setBlockiert(blockiert);
-
-			out.println("OK");
-		} catch (MitarbeiterExistiertNichtException e){ 
-			out.println("MitarbeiterExistiertNicht");
-		} catch (Exception e){
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterBearbeiten): ");
-			System.out.println(e.getMessage());
-		} 
-	}
-
-	private void mitarbeiterLoeschen(){
-		try {
-			int id = Integer.parseInt(in.readLine());
-			Mitarbeiter m = shop.sucheMitarbeiter(id);
-			shop.mitarbeiterLoeschen(m);
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
-			System.out.println(e.getMessage());
-		} catch (Exception e){
-			System.out.println("--->Fehler beim Loeschen von Mitarbeiter: ");
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	private void schreibeMitarbeiter(){
-		try {
-			shop.schreibeMitarbeiter();
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Mitarbeitern: ");
-			System.out.println(e.getMessage());
-		}
-	}
-
-	public void sucheKunde() {
-		Kunde k = null;
-		int id = 0;
-		try {
-			id = Integer.parseInt(in.readLine());
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			k = shop.sucheKunde(id);
-		} catch (KundeExistiertNichtException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		if (k != null) {
-			out.println("kse");
-			sendeKunde(k);
-		} else {out.println("ksf");
-		}
-	}
-	
-	private void gibAlleKunden() {
-		Vector<Kunde> kundenListe = null;
-
-		kundenListe = shop.gibAlleKunden();
-		Iterator<Kunde> iter = kundenListe.iterator();
-
-		out.println(kundenListe.size());
-		while(iter.hasNext()){
-			Kunde k = iter.next();
-			out.println(k.getId());
-			sendeKunde(k);
-			out.println(k.getBlockiert());
-		}
-	}
-	
-	public void kundenLoeschen() {
-		try {
-			int id = Integer.parseInt(in.readLine());
-			Kunde k = shop.sucheKunde(id);
-			shop.kundenLoeschen(k);
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (KundenLoeschen): ");
-			System.out.println(e.getMessage());
-		} catch (Exception e){
-			System.out.println("--->Fehler beim Loeschen von Kunde: ");
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	private void schreibeKunden() {
-		try {
-			shop.schreibeKunden();
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Kunde: ");
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	private void sendeKunde(Kunde k) {
-		out.println(k.getUsername());
-		out.println(k.getPasswort());
-		out.println(k.getName());
-		out.println(k.getStrasse());
-		out.println(k.getPlz());
-		out.println(k.getWohnort());
-	}
-	
-	private void sendeMitarbeiter(Mitarbeiter m){
-		out.println(m.getId());
-		out.println(m.getUsername());
-		out.println(m.getPasswort());
-		out.println(m.getName());
-		out.println(m.getFunktion());
-		out.println(m.getGehalt());
-		out.println(m.getBlockiert());
-	}
-	
-	
-	//////// Ereignisse ////////
-	
-	private void schreibeEreignisse(){
-		try {
-			shop.schreibeEreignisse();
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Ereignissen: ");
-			System.out.println(e.getMessage());
-		}
-	}
-
-	private void gibBestandsHistorie(){
-		try {
-			int artikelnummer = Integer.parseInt(in.readLine());
-			String bestandshistorie = shop.gibBestandsHistorie(artikelnummer);
-			out.println(bestandshistorie);
-		} catch (IOException e) {
-			System.out.println("--->Fehler beim Lesen vom Client (mitarbeiterLoeschen): ");
-			System.out.println(e.getMessage());
-		} catch (ArtikelExistiertNichtException e){
-			System.out.println("--->Fehler beim Senden der Bestandshistorie: ");
-			System.out.println(e.getMessage());
-		}
-	}
-	
-	private void gibBestandsHistorieDaten(){
-		try {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
