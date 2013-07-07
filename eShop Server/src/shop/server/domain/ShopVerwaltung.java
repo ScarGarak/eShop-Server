@@ -159,39 +159,22 @@ public class ShopVerwaltung implements ShopInterface{
 	
 	// Mitarbeiter Methoden
 	
-	/**
-	 * Diese Methode ermöglicht es einen Mitarbeiter nach seiner ID
-	 * zu suchen.
-	 * @param id ID der Mitarbeiter Instanz, die man suchen möchte
-	 * @return Die Mitarbeiter Instanz mit der gegebenen ID.
-	 */
+	@Override
 	public Mitarbeiter sucheMitarbeiter(int id) throws MitarbeiterExistiertNichtException{
 		return meineMitarbeiter.sucheMitarbeiter(id);
 	}
 
-	/**
-	 * Diese Methode ermöglicht es um die Mitarbeiterliste einzusehen.
-	 * @return Vector mit allen aktuellen Mitarbeiter Instanzen.
-	 */
+	@Override
 	public Vector<Mitarbeiter> gibAlleMitarbeiter(){
 		return meineMitarbeiter.getMitarbeiterListe();
 	}
 
-	/**
-	 * Diese Methode ermöglicht es eine Mitarbeiter Instanz zu löschen.
-	 * @param m Mitarbeiter Instanz zum löschen.
-	 */
+	@Override
 	public void mitarbeiterLoeschen(Mitarbeiter m){
 		meineMitarbeiter.loeschen(m);
 	}
 
-	/**
-	 * Diese Methode bildet eine neue Mitarbeiter Instanz und fügt sie
-	 * zur Mitarbeiterverwaltung hinzu.
-	 * @param name Name des neuen Mitarbeiters
-	 * @throws MitarbeiterExistiertBereitsException
-	 * @throws UsernameExistiertBereitsException 
-	 */
+	@Override
 	public void fuegeMitarbeiterHinzu(String username, String passwort, String name, MitarbeiterFunktion funktion, double gehalt) throws MitarbeiterExistiertBereitsException, UsernameExistiertBereitsException{
 		this.existiertUsernameSchon(username, " - in fuegeMitarbeiterHinzu() !");
 		
@@ -203,24 +186,12 @@ public class ShopVerwaltung implements ShopInterface{
 		meineMitarbeiter.einfuegen(m);
 	}
 
-	/**
-	 * Diese Methode schreibt alle Mitarbeiterdaten in die Datenquelle.
-	 * @throws IOException
-	 */
+	@Override
 	public void schreibeMitarbeiter() throws IOException{
 		meineMitarbeiter.schreibeDaten(mitarbeiterDateiname);
 	}
 	
-	/**
-	 * Diese Methode ist zum bearbeiten von Mitarbeitern.
-	 * @param id
-	 * @param passwort
-	 * @param name
-	 * @param funktion
-	 * @param gehalt
-	 * @param blockiert
-	 * @throws MitarbeiterExistiertNichtException
-	 */
+	@Override
 	public void mitarbeiterBearbeiten(int id, String passwort, String name, MitarbeiterFunktion funktion, double gehalt, boolean blockiert) throws MitarbeiterExistiertNichtException{
 		meineMitarbeiter.bearbeiten(id, passwort, name, funktion, gehalt, blockiert);
 	}
@@ -408,6 +379,7 @@ public class ShopVerwaltung implements ShopInterface{
 	
 	// Ereignis Methoden
 	
+	@Override
 	public void schreibeEreignisse() throws IOException{
 		meineEreignisse.schreibeDaten(logDateiname);
 	}
@@ -417,11 +389,13 @@ public class ShopVerwaltung implements ShopInterface{
 		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
 	}
 	
+	@Override
 	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
 		Artikel artikel = gibArtikel(artikelnummer);
 		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
 	}
 	
+	@Override
 	public String gibLogDatei() throws IOException{
 		return meineEreignisse.liesLogDatei(logDateiname);
 	}

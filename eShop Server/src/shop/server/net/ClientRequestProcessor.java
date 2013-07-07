@@ -33,7 +33,7 @@ import shop.common.valueobjects.Rechnung;
 import shop.common.valueobjects.WarenkorbArtikel;
 
 /**
- * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
+ * Klasse zur Verarbeitung der Kommunikation zwischen einem Client und dem
  * Server. Die Kommunikation folgt dabei dem "Protokoll" der Anwendung. Das
  * ClientRequestProcessor-Objekt führt folgende Schritte aus: 
  * 0. Begrüßungszeile an den Client senden
@@ -43,7 +43,7 @@ import shop.common.valueobjects.WarenkorbArtikel;
  *  2. abhängig von ausgewählter Aktion, Empfang weiterer Zeilen (Parameter für ausgewählte Aktion)
  *  3. Senden der Antwort an den Client; die Antwort besteht je nach Aktion aus einer oder mehr Zeilen
  * 
- * @author teschke, eirund
+ * @author Migliosi Angelo, Oliver Thummerer, Christof Ferreira Torres
  */
 class ClientRequestProcessor implements Runnable {
 	
@@ -1019,6 +1019,11 @@ class ClientRequestProcessor implements Runnable {
 	
 	//////// Mitarbeiter ////////
 
+	/**
+	 * Diese Methode empfaengt eine ID vom Client und sucht nach einem 
+	 * Mitarbeiter mit dieser ID. 
+	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 */
 	private void sucheMitarbeiter(){
 		String input = null;
 		Mitarbeiter m = null;
@@ -1043,6 +1048,11 @@ class ClientRequestProcessor implements Runnable {
 
 	}
 
+	/**
+	 * Diese Methode sendet die Informationen aller Mitarbeiter dem Client.
+	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 * @see ClientRequestProcessor#sendeMitarbeiter(Mitarbeiter)
+	 */
 	private void gibAlleMitarbeiter(){
 		Vector<Mitarbeiter> mitarbeiterListe = null;
 
@@ -1055,6 +1065,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 
+	/**
+	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
+	 * fuegt sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * statt.
+	 */
 	private void fuegeMitarbeiterHinzu(){
 		try{
 			String username = in.readLine();
@@ -1101,6 +1116,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 	
+	/**
+	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
+	 * fuegt diese in die Mitarbeiter-Instanz ein. Die Kommunikation mit dem Client 
+	 * findet gemaeß dem Protokoll statt.
+	 */
 	private void mitarbeiterBearbeiten(){
 		try{
 			int id = Integer.parseInt(in.readLine());
@@ -1127,6 +1147,11 @@ class ClientRequestProcessor implements Runnable {
 		} 
 	}
 
+	/**
+	 * Diese Methode empfaengt die ID eines Mitarbeiters vom Client und loescht die zugehoerige 
+	 * Mitarbeiter-Instanz sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * statt.
+	 */
 	private void mitarbeiterLoeschen(){
 		try {
 			int id = Integer.parseInt(in.readLine());
@@ -1141,14 +1166,17 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 	
+	/**
+	 * Diese Methode speichert alle Mitarbeiter und sendet "OK" zurueck, oder
+	 * "IOException", wenn eine IOException geworfen wurde.
+	 */
 	private void schreibeMitarbeiter(){
 		try {
 			shop.schreibeMitarbeiter();
+			out.println("OK");
 		} catch (IOException e) {
 			out.println("IOException");
-			return;
 		}
-		out.println("OK");
 	}
 
 	public void sucheKunde() {
@@ -1226,6 +1254,10 @@ class ClientRequestProcessor implements Runnable {
 		out.println(k.getWohnort());
 	}
 	
+	/**
+	 * Diese Methode sendet dem Client alle Informationen von dem angegebenem Mitarbeiter.
+	 * Die Kommunikation findet gemaeß dem Protokoll statt.
+	 */
 	private void sendeMitarbeiter(Mitarbeiter m){
 		out.println(m.getId());
 		out.println(m.getUsername());
@@ -1239,15 +1271,24 @@ class ClientRequestProcessor implements Runnable {
 	
 	//////// Ereignisse ////////
 	
+	/**
+	 * Diese Methode speichert alle Ereignisse und sendet "OK" zurueck, oder
+	 * "IOException", wenn eine Exception geworfen wurde.
+	 */
 	private void schreibeEreignisse(){
 		try {
 			shop.schreibeEreignisse();
+			out.println("OK");
 		} catch (IOException e) {
-			System.out.println("--->Fehler beim schreiben von Ereignissen: ");
-			System.out.println(e.getMessage());
+			out.println("IOException");
 		}
 	}
 	
+	/**
+	 * Diese Methode empfaengt die Artikelnummer eines Artikels vom Client und
+	 * sendet ihm dessen Bestandshistorie zurueck. Die Kommunikation mit dem Client
+	 * findet gemaeß dem Protokoll statt.
+	 */
 	private void gibBestandsHistorieDaten(){
 		try {
 			int artikelnummer = Integer.parseInt(in.readLine());
@@ -1265,6 +1306,10 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 	
+	/**
+	 * Diese Methode sendet die Logdatei Zeile pro Zeile zum Client. 
+	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 */
 	private void gibLogDatei(){
 		try {
 			String logDatei = shop.gibLogDatei();
