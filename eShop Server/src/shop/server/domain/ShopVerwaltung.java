@@ -369,6 +369,7 @@ public class ShopVerwaltung implements ShopInterface{
 	
 	// Ereignis-Methoden
 	
+	@Override
 	public void schreibeEreignisse() throws IOException{
 		meineEreignisse.schreibeDaten(logDateiname);
 	}
@@ -378,11 +379,13 @@ public class ShopVerwaltung implements ShopInterface{
 		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
 	}
 	
+	@Override
 	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
 		Artikel artikel = gibArtikel(artikelnummer);
 		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
 	}
 	
+	@Override
 	public String gibLogDatei() throws IOException{
 		return meineEreignisse.liesLogDatei(logDateiname);
 	}
@@ -428,7 +431,6 @@ public class ShopVerwaltung implements ShopInterface{
 		return result;
 	}
 	
-	@Override
 	public void disconnect() throws IOException {
 		
 	}
