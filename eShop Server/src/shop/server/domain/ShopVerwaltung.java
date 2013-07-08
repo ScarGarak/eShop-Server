@@ -80,8 +80,17 @@ public class ShopVerwaltung implements ShopInterface{
 		meineArtikel.schreibeDaten(artikelDateiname);
 		
 		meineMitarbeiter = new MitarbeiterVerwaltung();
-		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
-		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
+//		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
+//		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
+		try {
+			meineMitarbeiter.einfuegen(new Mitarbeiter(1, "markus", "123", "Markus MŸller", MitarbeiterFunktion.Admin, 2500));
+			meineMitarbeiter.einfuegen(new Mitarbeiter(2, "amigliosi", "123", "Angelo Migliosi", MitarbeiterFunktion.Mitarbeiter, 1800));
+			meineMitarbeiter.einfuegen(new Mitarbeiter(3, "ctorres", "123", "Christof Ferreira Torres", MitarbeiterFunktion.Admin, 1800));
+			meineMitarbeiter.einfuegen(new Mitarbeiter(4, "othummerer", "123", "Oliver Thummerer", MitarbeiterFunktion.Admin, 2500));
+		} catch (MitarbeiterExistiertBereitsException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		meineKunden = new KundenVerwaltung();
 		//meineKunden.liesDaten(kundenDateiname);
