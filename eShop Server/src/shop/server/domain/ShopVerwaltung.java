@@ -63,46 +63,15 @@ public class ShopVerwaltung implements ShopInterface{
 	 */
 	public ShopVerwaltung() throws IOException {
 		meineArtikel = new ArtikelVerwaltung();
-		//meineArtikel.liesDaten(artikelDateiname);
-		try {
-			meineArtikel.einfuegen(new Artikel(10010, "Apfel", 1.50, 35));
-			meineArtikel.einfuegen(new Artikel(10011, "Banane", 1.60, 8));
-			meineArtikel.einfuegen(new Massengutartikel(10012, "Dosenbier", 2.00, 6, 48));
-			meineArtikel.einfuegen(new Artikel(10013, "Klavier", 7000, 7));
-			meineArtikel.einfuegen(new Massengutartikel(10014, "Joghurt", 1.20, 4, 24));
-		} catch (ArtikelExistiertBereitsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ArtikelBestandIstKeineVielfacheDerPackungsgroesseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		meineArtikel.schreibeDaten(artikelDateiname);
+		meineArtikel.liesDaten(artikelDateiname);
 		
 		meineMitarbeiter = new MitarbeiterVerwaltung();
-//		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
-//		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
-		try {
-			meineMitarbeiter.einfuegen(new Mitarbeiter(1, "markus", "123", "Markus MŸller", MitarbeiterFunktion.Admin, 2500));
-			meineMitarbeiter.einfuegen(new Mitarbeiter(2, "amigliosi", "123", "Angelo Migliosi", MitarbeiterFunktion.Mitarbeiter, 1800));
-			meineMitarbeiter.einfuegen(new Mitarbeiter(3, "ctorres", "123", "Christof Ferreira Torres", MitarbeiterFunktion.Admin, 1800));
-			meineMitarbeiter.einfuegen(new Mitarbeiter(4, "othummerer", "123", "Oliver Thummerer", MitarbeiterFunktion.Admin, 2500));
-		} catch (MitarbeiterExistiertBereitsException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		meineMitarbeiter.liesDaten(mitarbeiterDateiname);
+		mitarbeiterNextId = meineMitarbeiter.getMitarbeiterListe().get(meineMitarbeiter.getMitarbeiterListe().size()-1).getId() + 1;
 		
 		meineKunden = new KundenVerwaltung();
-		//meineKunden.liesDaten(kundenDateiname);
-		//kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
-		try {
-			meineKunden.einfuegen(new Kunde(1, "hans", "123", "Hans Meiser", "Blubweg 5", 28201, "Bremen"));
-			meineKunden.einfuegen(new Kunde(2, "bernd", "123", "Bernd", "Siegesstrasze", 30827, "Hannover"));
-		} catch (KundeExistiertBereitsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		meineKunden.schreibeDaten(kundenDateiname);
+		meineKunden.liesDaten(kundenDateiname);
+		kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
 		
 		meineEreignisse = new EreignisVerwaltung();
 	}
