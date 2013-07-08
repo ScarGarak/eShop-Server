@@ -107,8 +107,10 @@ public class ShopVerwaltung implements ShopInterface{
 		meineEreignisse = new EreignisVerwaltung();
 	}
 	
-	// Artikel Methoden
+	// Artikel-Methoden
 	
+	
+	@Override
 	public void fuegeArtikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int bestand) throws ArtikelExistiertBereitsException {
 		Artikel artikel = new Artikel(artikelnummer, bezeichnung, preis, bestand);
 		meineArtikel.einfuegen(artikel);
@@ -116,6 +118,7 @@ public class ShopVerwaltung implements ShopInterface{
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
+	@Override
 	public void fuegeMassengutartikelEin(Mitarbeiter mitarbeiter, int artikelnummer, String bezeichnung, double preis, int packungsgroesse, int bestand) throws ArtikelExistiertBereitsException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		Massengutartikel artikel = new Massengutartikel(artikelnummer, bezeichnung, preis, packungsgroesse, bestand);
 		meineArtikel.einfuegen(artikel);
@@ -123,50 +126,59 @@ public class ShopVerwaltung implements ShopInterface{
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), artikel, bestand, mitarbeiter));
 	}
 	
+	/**
+	 * Methode die einen Artikel zurŸck gibt.
+	 * @param artikelnummer
+	 * @return Artikel
+	 * @throws ArtikelExistiertNichtException
+	 */
 	public Artikel gibArtikel(int artikelnummer) throws ArtikelExistiertNichtException {
 		return meineArtikel.getArtikel(artikelnummer);
 	}
 	
+	@Override
 	public void artikelBestandVeraendern(Mitarbeiter mitarbeiter, int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineArtikel.bestandVeraendern(artikelnummer, anzahl);
 		meineEreignisse.hinzufuegen(new Ereignis(new Date(), gibArtikel(artikelnummer), anzahl, mitarbeiter));
 	}
 	
+	@Override
 	public List<Artikel> gibAlleArtikelSortiertNachArtikelnummer() {
 		return meineArtikel.getArtikelBestandSortiertNachArtikelnummer();
 	}
 	
+	@Override
 	public List<Artikel> gibAlleArtikelSortiertNachBezeichnung() {
 		return meineArtikel.getArtikelBestandSortiertNachBezeichnung();
 	}
 	
+	@Override
 	public List<Artikel> sucheArtikel(int artikelnummer) {
 		return meineArtikel.sucheArtikel(artikelnummer); 
 	}
 	
+	@Override
 	public List<Artikel> sucheArtikel(String bezeichnung) {
 		return meineArtikel.sucheArtikel(bezeichnung); 
 	}
 
+	@Override
 	public void artikelBearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException {
 		meineArtikel.bearbeiten(artikelnummer, preis, bezeichnung);
 	}
 	
+	@Override
 	public void entferneArtikel(Mitarbeiter mitarbeiter, int artikelnummer) throws ArtikelExistiertNichtException, IOException {
 		meineEreignisse.entferneArtikelAusLog(artikelnummer, logDateiname);
 		meineArtikel.entfernen(artikelnummer);
 	}
 	
-	/**
-	 * Methode zum Speichern des Artikelbestands in einer Datei.
-	 * 
-	 * @throws IOException
-	 */
+	@Override
 	public void schreibeArtikel() throws IOException {
 		meineArtikel.schreibeDaten(artikelDateiname);
 	}
 	
-	// Mitarbeiter Methoden
+	// Mitarbeiter-Methoden
 	
 	@Override
 	public Mitarbeiter sucheMitarbeiter(int id) throws MitarbeiterExistiertNichtException{
@@ -230,7 +242,7 @@ public class ShopVerwaltung implements ShopInterface{
 		}
 	}
 	
-	// Kunden Methoden
+	// Kunden-Methoden
 	
 	/**
 	* Diese Methode ermoeglicht es einen Kunden nach seiner ID
@@ -300,26 +312,41 @@ public class ShopVerwaltung implements ShopInterface{
 		meineKunden.schreibeDaten(kundenDateiname);
 	}
 	
+	// Warenkorb-Methoden
+	
+	@Override
 	public List<WarenkorbArtikel> gibWarenkorb(Kunde kunde) {
 		return meineKunden.gibWarenkorb(kunde);
 	}
 	
+	/**
+	 * Methode zum zurŸckgeben eines Warenkorb Artikels.
+	 * 
+	 * @param kunde
+	 * @param artikel
+	 * @return WarenkorbArtikel
+	 * @throws ArtikelExistiertNichtException
+	 */
 	private WarenkorbArtikel gibWarenkorbArtikel(Kunde kunde, Artikel artikel) throws ArtikelExistiertNichtException {
 		return meineKunden.gibWarenkorbArtikel(kunde, artikel);
 	}
 	
+	@Override
 	public void inDenWarenkorbLegen(Kunde kunde, int artikelnummer, int stueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineKunden.inDenWarenkorbLegen(kunde, new WarenkorbArtikel(this.gibArtikel(artikelnummer), stueckzahl));
 	}
 	
+	@Override
 	public void ausDemWarenkorbHerausnehmen(Kunde kunde, int artikelnummer) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineKunden.ausDemWarenkorbHerausnehmen(kunde, this.gibArtikel(artikelnummer));
 	}
 	
+	@Override
 	public void stueckzahlAendern(Kunde kunde, int warenkorbArtikelnummer, int neueStueckzahl) throws ArtikelBestandIstZuKleinException, ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineKunden.stueckzahlAendern(kunde, this.gibWarenkorbArtikel(kunde, this.gibArtikel(warenkorbArtikelnummer)), neueStueckzahl);
 	}
 	
+	@Override
 	public Rechnung kaufen(Kunde kunde) throws IOException, WarenkorbIstLeerException {
 		Rechnung rechnung = meineKunden.kaufen(kunde);
 		schreibeArtikel();
@@ -335,23 +362,35 @@ public class ShopVerwaltung implements ShopInterface{
 		return rechnung;
 	}
 	
+	@Override
 	public void leeren(Kunde k) throws ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		meineKunden.leeren(k);
 	}
 	
-	public Kunde loginVergessen(String name, String strasse, int zip, String wohnort){
-		Kunde result = null;
-		Iterator<Kunde> itK = meineKunden.getKundenListe().iterator();
-		while(itK.hasNext()){
-			Kunde k = itK.next();
-			if(k.getName().equals(name) && k.getStrasse().equals(strasse) && k.getPlz() == zip && k.getWohnort().equals(wohnort)){
-				result = k;
-				break;
-			}
-		}
-		
-		return result;
+	// Ereignis-Methoden
+	
+	@Override
+	public void schreibeEreignisse() throws IOException{
+		meineEreignisse.schreibeDaten(logDateiname);
 	}
+	
+	public String gibBestandsHistorie(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
+		Artikel artikel = gibArtikel(artikelnummer);
+		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
+	}
+	
+	@Override
+	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
+		Artikel artikel = gibArtikel(artikelnummer);
+		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
+	}
+	
+	@Override
+	public String gibLogDatei() throws IOException{
+		return meineEreignisse.liesLogDatei(logDateiname);
+	}
+	
+	// Login-Methoden
 	
 	/**
 	 * Methode zur überprüfung des Logins auf basis des Usernamens und des Passwortes
@@ -375,37 +414,24 @@ public class ShopVerwaltung implements ShopInterface{
 				return p;
 			}
 		}
-		System.out.println("Zugriff verweigert!!!");
-		System.out.println("Bitte überprüfen Sie ihren Usernamen und Ihr Passwort.");
 		return null;
 	}
 	
-	// Ereignis Methoden
-	
-	@Override
-	public void schreibeEreignisse() throws IOException{
-		meineEreignisse.schreibeDaten(logDateiname);
+	public Kunde loginVergessen(String name, String strasse, int zip, String wohnort){
+		Kunde result = null;
+		Iterator<Kunde> itK = meineKunden.getKundenListe().iterator();
+		while(itK.hasNext()){
+			Kunde k = itK.next();
+			if(k.getName().equals(name) && k.getStrasse().equals(strasse) && k.getPlz() == zip && k.getWohnort().equals(wohnort)){
+				result = k;
+				break;
+			}
+		}
+		
+		return result;
 	}
 	
-	public String gibBestandsHistorie(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
-		Artikel artikel = gibArtikel(artikelnummer);
-		return meineEreignisse.gibBestandsHistorie(artikel, logDateiname);
-	}
-	
-	@Override
-	public int[] gibBestandsHistorieDaten(int artikelnummer) throws IOException, ArtikelExistiertNichtException{
-		Artikel artikel = gibArtikel(artikelnummer);
-		return meineEreignisse.gibBestandsHistorieDaten(artikel, logDateiname);
-	}
-	
-	@Override
-	public String gibLogDatei() throws IOException{
-		return meineEreignisse.liesLogDatei(logDateiname);
-	}
-
-	@Override
 	public void disconnect() throws IOException {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -17,7 +17,6 @@ import shop.server.persistence.data.ObjectDataPersistenceManager;
  * Klasse zur Verwaltung von Artikeln.
  * 
  * @author Christof Ferreira Torres
- * @version 1.0.0
  */
 public class ArtikelVerwaltung {
 
@@ -78,6 +77,12 @@ public class ArtikelVerwaltung {
 		pm.close();
 	}
 	
+	/**
+	 * Methode zum einfügen eines Artikels in den Bestand.
+	 * 
+	 * @param artikel
+	 * @throws ArtikelExistiertBereitsException
+	 */
 	public void einfuegen(Artikel artikel) throws ArtikelExistiertBereitsException {
 		if (!artikelBestand.contains(artikel))
 			artikelBestand.add(artikel);
@@ -85,6 +90,14 @@ public class ArtikelVerwaltung {
 			throw new ArtikelExistiertBereitsException(artikel, " - in 'einfuegen()'");
 	}
 	
+	/**
+	 * Methode zum verändern des Bestands eines Artikels.
+	 * 
+	 * @param artikelnummer
+	 * @param anzahl
+	 * @throws ArtikelExistiertNichtException
+	 * @throws ArtikelBestandIstKeineVielfacheDerPackungsgroesseException
+	 */
 	public synchronized void bestandVeraendern(int artikelnummer, int anzahl) throws ArtikelExistiertNichtException, ArtikelBestandIstKeineVielfacheDerPackungsgroesseException {
 		int index = -1;
 
@@ -101,6 +114,13 @@ public class ArtikelVerwaltung {
 			throw new ArtikelExistiertNichtException(artikelnummer, " - in 'bestandErhoehen()'");
 	}
 	
+	/**
+	 * Methode die anhand der Artikelnummer einen Artikel zurückgibt.
+	 * 
+	 * @param artikelnummer
+	 * @return Artikel
+	 * @throws ArtikelExistiertNichtException
+	 */
 	public Artikel getArtikel(int artikelnummer) throws ArtikelExistiertNichtException {
 		Iterator<Artikel> iter = artikelBestand.iterator();
 		while (iter.hasNext()) {
@@ -112,6 +132,13 @@ public class ArtikelVerwaltung {
 		throw new ArtikelExistiertNichtException(artikelnummer, " - in 'getArtikel()'");
 	}
 	
+	/**
+	 * Methode um Artikel mit einer bestimmten Artikelnummer im Bestand zu suchen. Es wird
+	 * eine Liste von Artikeln zurückgegeben.
+	 * 
+	 * @param artikelnummer
+	 * @return List<Artikel>
+	 */
 	public List<Artikel> sucheArtikel(int artikelnummer) {
 		List<Artikel> ergebnis = new Vector<Artikel>();
 		
@@ -127,6 +154,13 @@ public class ArtikelVerwaltung {
 		return ergebnis;
 	}
 	
+	/**
+	 * Methode um Artikel mit einer bestimmten Bezeichnug im Bestand zu suchen. Es wird
+	 * eine Liste von Artikeln zurückgegeben.
+	 * 
+	 * @param bezeichnung
+	 * @return List<Artikel>
+	 */
 	public List<Artikel> sucheArtikel(String bezeichnung) {
 		List<Artikel> ergebnis = new Vector<Artikel>();
 		
@@ -142,6 +176,12 @@ public class ArtikelVerwaltung {
 		return ergebnis;
 	}
 	
+	/**
+	 * Methode um einen Artikel aus dem Bestand zu entfernen.
+	 * 
+	 * @param artikelnummer
+	 * @throws ArtikelExistiertNichtException
+	 */
 	public synchronized void entfernen(int artikelnummer) throws ArtikelExistiertNichtException {
 		int index = -1;
 
@@ -158,12 +198,22 @@ public class ArtikelVerwaltung {
 			throw new ArtikelExistiertNichtException(artikelnummer, " - in 'entfernen()'");
 	}
 	
+	/**
+	 * Methode die den Artikelbestand zurückgibt.
+	 * 
+	 * @return List<Artikel>
+	 */
 	public List<Artikel> getArtikelBestand() {
 		List<Artikel> ergebnis = new Vector<Artikel>();
 		ergebnis.addAll(artikelBestand);
 		return ergebnis;
 	}
 	
+	/**
+	 * Methode die den Artikelbestand sortiert nach Artikelnummer zurück gibt.
+	 * 
+	 * @return List<Artikel>
+	 */
 	public List<Artikel> getArtikelBestandSortiertNachArtikelnummer() {
 		List<Artikel> ergebnis = new Vector<Artikel>();
 		ergebnis.addAll(artikelBestand);
@@ -171,6 +221,11 @@ public class ArtikelVerwaltung {
 		return ergebnis;
 	}
 	
+	/**
+	 * Methode die den Artikelbestand sortiert nach Bezeichnung zurück gibt.
+	 * 
+	 * @return
+	 */
 	public List<Artikel> getArtikelBestandSortiertNachBezeichnung() {
 		List<Artikel> ergebnis = new Vector<Artikel>();
 		ergebnis.addAll(artikelBestand);
@@ -178,6 +233,14 @@ public class ArtikelVerwaltung {
 		return ergebnis;
 	}
 	
+	/**
+	 * Methode zum bearbeiten eines Artikels.
+	 * 
+	 * @param artikelnummer
+	 * @param preis
+	 * @param bezeichnung
+	 * @throws ArtikelExistiertNichtException
+	 */
 	public synchronized void bearbeiten(int artikelnummer, double preis, String bezeichnung) throws ArtikelExistiertNichtException{
 		Artikel artikel = getArtikel(artikelnummer);
 		artikel.setPreis(preis);

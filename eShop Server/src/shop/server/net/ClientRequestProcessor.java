@@ -138,21 +138,13 @@ class ClientRequestProcessor implements Runnable {
 				// Einfach behandeln wie ein "quit"
 				input = "q";
 			}
-			else if (input.equals("pl")) {
-				pruefeLogin();
-			}
-
-			// Artikel-Methode 
+			// Artikel-Methoden 
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
-
-
 			}
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
-
 			}
-
 			else if (input.equals("abv")) {
 				artikelBestandVeraendern();
 			}
@@ -196,7 +188,26 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("sm")) {
 				schreibeMitarbeiter();
 			}
-			// Warenkorb
+			// Kunden-Methoden
+			else if (input.equals("ke")) {
+				fuegeKundenHinzu();
+			}
+			else if (input.equals("kb")) {
+				kundenBearbeiten();
+			} 
+			else if (input.equals("sk")) {
+				sucheKunde();
+			}
+			else if (input.equals("gak")) {
+				gibAlleKunden();
+			}
+			else if (input.equals("kl")) {
+				kundenLoeschen();
+			}
+			else if (input.equals("sck")) {
+				schreibeKunden();
+			}
+			// Warenkorb-Methoden
 			else if (input.equals("gw")) {
 				gibWarenkorb();
 			}
@@ -225,25 +236,13 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("gl")) {
 				gibLogDatei();
 			}
-			// Kunden-Methoden
-			else if (input.equals("ke")) {
-				fuegeKundenHinzu();
-			} 
+			// Login-Methoden
+			else if (input.equals("pl")) {
+				pruefeLogin();
+			}
 			else if (input.equals("lv")) {
 				loginVergessen();
 			}
-			else if (input.equals("kb")) {
-				kundenBearbeiten();
-			} else if (input.equals("sk")) {
-				sucheKunde();
-			}
-			else if (input.equals("gak")) {
-				gibAlleKunden();
-			}else if (input.equals("kl")) {
-				kundenLoeschen();
-			}else if (input.equals("sck")) {
-				schreibeKunden();
-			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -253,30 +252,6 @@ class ClientRequestProcessor implements Runnable {
 		// Verbindung wurde vom Client abgebrochen:
 		disconnect();		
 	}
-	
-//	private void notifyClients(String aktion) {
-//	// Output-Stream initialisieren:
-//	PrintStream cout;
-//	for (int i = 0; i < activeClients.size(); i++) {
-//		try {
-//			// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
-//			cout = new PrintStream(activeClients.get(i).getOutputStream());
-//			// Kennzeichen für gewählte Aktion senden
-//			cout.println(aktion);
-//		} catch (IOException e) {
-//			System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
-//			// Wenn im "try"-Block Fehler auftreten, dann Client-Socket schlieﬂen:
-//			if (activeClients.get(i) != null)
-//				try {
-//					activeClients.get(i).close();
-//				} catch (IOException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//			System.err.println("Client-Socket geschlossen");
-//		}
-//	}
-//}
 	
 //	private void notifyClients(String aktion) {
 //	// Output-Stream initialisieren:
@@ -725,8 +700,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -776,11 +750,10 @@ class ClientRequestProcessor implements Runnable {
 		List<WarenkorbArtikel> warenkorbArtikel = null;
 		try {
 			warenkorbArtikel = shop.gibWarenkorb(shop.sucheKunde(id));
+			sendeWarenkorbArtikelAnClient(warenkorbArtikel);
 		} catch (KundeExistiertNichtException e) {
 			out.println("KundeExistiertNichtException");
 		}
-				
-		sendeWarenkorbArtikelAnClient(warenkorbArtikel);
 	}
 	
 	private void inDenWarenkorbLegen() {
@@ -888,8 +861,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -898,8 +870,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Neue Stückzahl): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Neue Stückzahl): ");
 			System.out.println(e.getMessage());
 		}
 		int neueStueckzahl = Integer.parseInt(input);
