@@ -11,10 +11,10 @@ import shop.server.domain.ShopVerwaltung;
 /**
  * Serverseitige Anwendung, die Verbindungsanfragen von Client-Prozessen 
  * entgegennimmt.
- * Falls sich ein Client über einen Socket verbindet, wird ein "ClientRequestProcessor"-Objekt 
+ * Falls sich ein Client ueber einen Socket verbindet, wird ein "ClientRequestProcessor"-Objekt 
  * als eigener Prozess (Thread) gestartet, der dann (in seiner run()-Methode) die
- * weitere Kommunikation mit dem Client über das mitgegebene Socket-Objekt 
- * übernimmt. 
+ * weitere Kommunikation mit dem Client ueber das mitgegebene Socket-Objekt 
+ * uebernimmt. 
  * Danach wartet der Server weiter auf Verbindungen und wiederholt den obigen
  * Prozess. 
  *  
@@ -64,10 +64,10 @@ public class ShopServer {
 	}
 
 	/**
-	 * Methode zur Entgegennahme von Verbindungswünschen durch Clients.
+	 * Methode zur Entgegennahme von Verbindungswuenschen durch Clients.
 	 * Die Methode fragt wiederholt ab, ob Verbindungsanfragen vorliegen
 	 * und erzeugt dann jeweils ein ClientRequestProcessor-Objekt mit dem 
-	 * für diese Verbindung erzeugten Client-Socket.
+	 * fuer diese Verbindung erzeugten Client-Socket.
 	 */
 	public void acceptClientConnectRequests() {
 		try {

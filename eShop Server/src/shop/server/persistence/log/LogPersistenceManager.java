@@ -10,7 +10,7 @@ import shop.common.valueobjects.Person;
  * 
  * @author Christof Ferreira Torres
  * 
- * Interface für den Zugriff auf ein Speichermedium
+ * Interface fuer den Zugriff auf ein Speichermedium
  * zum Ablegen von Ein- und Auslagerungsdaten.
  * 
  * Das Interface muss von Klassen implementiert werden wenn eine
@@ -20,7 +20,7 @@ public interface LogPersistenceManager {
 
 	
 	/**
-	 * Methoden zum öffnen und schließen einer externen Datenquelle
+	 * Methoden zum oeffnen und schlieszen einer externen Datenquelle
 	 * 
 	 * @param datenquelle
 	 * @throws IOException

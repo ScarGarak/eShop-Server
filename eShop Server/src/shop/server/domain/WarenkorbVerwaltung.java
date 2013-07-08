@@ -20,10 +20,10 @@ import shop.common.valueobjects.WarenkorbArtikel;
 public class WarenkorbVerwaltung {
 	
 	/**
-	 * Synchronisierte methode zum hinzufügen eines Warenkorb Artikels in den Warenkorb.
+	 * Synchronisierte methode zum hinzufuegen eines Warenkorb Artikels in den Warenkorb.
 	 * 
-	 * @param kunde Der Kunde der einen Warenkorb Artikel in seinen Warenkorb hinzufügen will.
-	 * @param warenkorbArtikel Der Warenkorb Artikel der in den Warenkorb hinzugefügt werden soll.
+	 * @param kunde Der Kunde der einen Warenkorb Artikel in seinen Warenkorb hinzufuegen will.
+	 * @param warenkorbArtikel Der Warenkorb Artikel der in den Warenkorb hinzugefuegt werden soll.
 	 * @throws ArtikelBestandIstZuKleinException 
 	 * @throws ArtikelExistiertNichtException 
 	 * @throws ArtikelBestandIstKeineVielfacheDerPackungsgroesseException 
@@ -43,11 +43,11 @@ public class WarenkorbVerwaltung {
 	}
 	
 	/**
-	 * Synchronisierte methode zum ändern der Stückzahl eines Artikels im Warenkorb.
+	 * Synchronisierte methode zum aendern der Stueckzahl eines Artikels im Warenkorb.
 	 * 
-	 * @param kunde Der Kunde der die Stückzahl eines Warenkorb Artikels in seinem Warenkorb ändern will.
-	 * @param warenkorbArtikel Der Warenkorb Artikel dessen Stückzahl verändert werden soll.
-	 * @param neueStueckzahl Die neue Stückzahl des Warenkorb Artikels.
+	 * @param kunde Der Kunde der die Stueckzahl eines Warenkorb Artikels in seinem Warenkorb aendern will.
+	 * @param warenkorbArtikel Der Warenkorb Artikel dessen Stueckzahl veraendert werden soll.
+	 * @param neueStueckzahl Die neue Stueckzahl des Warenkorb Artikels.
 	 * @throws ArtikelBestandIstZuKleinException 
 	 * @throws ArtikelExistiertNichtException 
 	 * @throws ArtikelBestandIstKeineVielfacheDerPackungsgroesseException 
@@ -124,10 +124,10 @@ public class WarenkorbVerwaltung {
 	}
 
 	/**
-	 * Methode zum zurückgeben eines Warenkorb Artikels anhand eines Artikels.
+	 * Methode zum zurueckgeben eines Warenkorb Artikels anhand eines Artikels.
 	 * 
-	 * @param kunde Der Kunde der einen Warenkorb Artikel zurück haben möchte.
-	 * @param artikel Der Artikel von dem der Kunde einen Warenkorb Artikel möchte.
+	 * @param kunde Der Kunde der einen Warenkorb Artikel zurueck haben moechte.
+	 * @param artikel Der Artikel von dem der Kunde einen Warenkorb Artikel moechte.
 	 * @return WarenkorbArtikel Eine Referenz auf einen Warenkorb Artikel.
 	 * @throws ArtikelExistiertNichtException 
 	 */ 

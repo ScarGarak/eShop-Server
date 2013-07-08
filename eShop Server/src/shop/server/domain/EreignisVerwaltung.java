@@ -3,7 +3,7 @@ package shop.server.domain;
 /**
  * Diese Klasse dient zur Verwaltung der Ereignisse. Ein Ereignis entsteht bei einer
  * Aus- oder Einlagerung eines Artikels. Diese Verwaltung stellt mehrere Methoden zur
- * Verwaltung von der Logdatei zur Verfügung.
+ * Verwaltung von der Logdatei zur Verfuegung.
  * 
  *  @autho Migliosi Angelo
  */
@@ -65,7 +65,7 @@ public class EreignisVerwaltung {
 	 * 
 	 * Bevor sie dies tut, wird kontrolliert, ob die Bestandshistorie des angegebenen Artikels bereits
 	 * gebildet wurde. Wenn nicht, ruft sie die Methode zum erstellen der Bestandshistorie auf.
-	 * Anschließend iteriert sie durch die Bestandshistorie und fügt alles in einen String.
+	 * Anschlieszend iteriert sie durch die Bestandshistorie und fuegt alles in einen String.
 	 * 
 	 * @see EreignisVerwaltung#erstelleBestandsHistorie(Artikel, String)
 	 * @param artikel
@@ -86,7 +86,7 @@ public class EreignisVerwaltung {
 		
 		String result = "";
 		
-		// Die Bestandshistorie für den Artikel mit artikelID wurde bereits berechnet
+		// Die Bestandshistorie fuer den Artikel mit artikelID wurde bereits berechnet
 		Iterator<String[]> it = bestandsHistorieListe.get(artikelID).iterator();
 		while(it.hasNext()){
 			String[] bestandHistorie = it.next();
@@ -100,7 +100,7 @@ public class EreignisVerwaltung {
 	 * 
 	 * Bevor sie dies tut, wird kontrolliert, ob die Bestandshistorie des angegebenen Artikels bereits
 	 * gebildet wurde. Wenn nicht, ruft sie die Methode zum erstellen der Bestandshistorie auf.
-	 * Anschließend iteriert sie durch die Bestandshistorie und fügt alles in einen String.
+	 * Anschlieszend iteriert sie durch die Bestandshistorie und fuegt alles in einen String.
 	 * @param artikel
 	 * @param dateiname
 	 * @return
@@ -119,7 +119,7 @@ public class EreignisVerwaltung {
 		
 		int[] result = new int[30];
 		
-		// Die Bestandshistorie für den Artikel mit artikelID wurde bereits berechnet
+		// Die Bestandshistorie fuer den Artikel mit artikelID wurde bereits berechnet
 		try{
 			Iterator<String[]> it = bestandsHistorieListe.get(artikelID).iterator();
 			for(int i = 0; i < result.length && it.hasNext(); i++){
@@ -136,11 +136,11 @@ public class EreignisVerwaltung {
 	
 	/**
 	 * Diese Methode erstellt die Bestandshistorie des angegebenen Artikels. 
-	 * Sie realisiert dies indem sie durch die Logdatei geht und die Einträge des Artikels,
-	 * die jünger als 30 Tage sind, entnimmt und mit Hilfe der Anzahl der Ein-/Auslagerungen
+	 * Sie realisiert dies indem sie durch die Logdatei geht und die Eintraege des Artikels,
+	 * die juenger als 30 Tage sind, entnimmt und mit Hilfe der Anzahl der Ein-/Auslagerungen
 	 * und des Datums die Bestandsveraenderungen eines ganzen Tages rechnet.
 	 * 
-	 * Anschließend ruft sie noch die Methode zur Berechnung der Bestände mit Hilfe des
+	 * Anschlieszend ruft sie noch die Methode zur Berechnung der Bestaende mit Hilfe des
 	 * aktuellen Artikelbestandes.
 	 * 
 	 * @see EreignisVerwaltung#rechneBestand(int, int)
@@ -161,15 +161,15 @@ public class EreignisVerwaltung {
 		String zeile = "";
 		String[] tokens = null;
 
-		// Gehe von Linie zur Linie, und kontrolliere, ob das Datum nicht älter als 30 Tage ist.
-		// Wenn die Linie nicht älter als 30 Tage ist, gehe weiter.
+		// Gehe von Linie zur Linie, und kontrolliere, ob das Datum nicht aelter als 30 Tage ist.
+		// Wenn die Linie nicht aelter als 30 Tage ist, gehe weiter.
 		do{
 			zeile = lpm.ladeEinAuslagerung();
 			tokens = zeile.split(" ");
 			if(tokens != null && tokens.length > 1){
 				datum = tokens[0]+" "+tokens[1];
 			}else{
-				// Es sind keine Einträge in den letzten 30 Tagen vorhanden
+				// Es sind keine Eintraege in den letzten 30 Tagen vorhanden
 				break;
 			}
 		}while(!istDatumGueltig(datum));
@@ -180,7 +180,7 @@ public class EreignisVerwaltung {
 		// Gehe von Zeile zur zeile, bis zum Schluss der Datei
 		do{
 			// Solange wie die eingelesene Linie nicht das Pattern 'Artikel artikelID'
-			// beinhaltet, gehen wir zur nächsten Linie.
+			// beinhaltet, gehen wir zur naechsten Linie.
 			while(!zeile.contains("Artikel "+artikelID) && !zeile.equals("")){
 				zeile = lpm.ladeEinAuslagerung();
 			}
@@ -204,7 +204,7 @@ public class EreignisVerwaltung {
 						eintrag[1] = bestandsVeraenderung+"";
 						bestandsHistorie.add(eintrag);
 						
-						// Die fehlenden Tage zwischen Datum und NewDatum hinzufügen
+						// Die fehlenden Tage zwischen Datum und NewDatum hinzufuegen
 						fehlendeTageHinzufuegen(bestandsHistorie, datum, newDatum);
 					}else{
 						ersterDurchlauf = false;
@@ -225,7 +225,7 @@ public class EreignisVerwaltung {
 				try{
 					if(tokens[8].equals("eingelagert")){
 						// Da wir den Bestand vom aktuellem Bestand zurueck rechnen,
-						// müssen wir die anzahl der Einlagerung wieder subtrahieren
+						// muessen wir die anzahl der Einlagerung wieder subtrahieren
 						bestandsVeraenderung -= Integer.parseInt(tokens[4]);
 					}else{
 						bestandsVeraenderung += Integer.parseInt(tokens[4]);
@@ -252,14 +252,14 @@ public class EreignisVerwaltung {
 			// Fuege noch die Tage bis heute hinzu
 			fehlendeTageHinzufuegen(bestandsHistorie, datum, heute);
 		}else{
-			// Um die Bestandshistorie zurueck rechnen zu können
-			// müssen die Ein- und Auslagerungen von Heute jedoch
+			// Um die Bestandshistorie zurueck rechnen zu koennen
+			// muessen die Ein- und Auslagerungen von Heute jedoch
 			// beachtet werden
 			bestand += bestandsVeraenderung;
 		}
 		
-		// Jetzt müssen nur noch die Ereignisse in der Ereignissliste
-		// überprüft werden, da diese noch nich in der Log Datei
+		// Jetzt muessen nur noch die Ereignisse in der Ereignissliste
+		// ueberprueft werden, da diese noch nich in der Log Datei
 		// zu finden sind
 		
 		if(!ereignisListe.isEmpty()){
@@ -274,7 +274,7 @@ public class EreignisVerwaltung {
 		
 		lpm.close();
 		
-		// Jetzt wird noch die 'Vorgeschichte' des Artikels hinzugefuegt! Dies ist nötig, um 
+		// Jetzt wird noch die 'Vorgeschichte' des Artikels hinzugefuegt! Dies ist noetig, um 
 		// 30 Eintraege in der Bestandshistorie zu haben, auch wenn das Artikel noch nicht
 		// solange im Bestand ist, oder es Bestandsveraenderungen gab, die aelter als 30 Tage sind.
 		if(bestandsHistorie.size() < 30)
@@ -343,7 +343,7 @@ public class EreignisVerwaltung {
 			neuesDatum.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(newDatum));
 			
 			// Da es sich um das angegebene 'oldDatum' um das Datum handelt, was zuletzt zur Bestandshistorie
-			// hinzugefügt wurde, muss es zuerst noch inkrementiert werden, bevor wir in die Schleife gehen
+			// hinzugefuegt wurde, muss es zuerst noch inkrementiert werden, bevor wir in die Schleife gehen
 			altesDatum.add(Calendar.DAY_OF_MONTH, 1);
 			
 			// Wenn newDatum heute ist wird es dekrementiert, da Heute nicht in der Bestandshistorie angezeigt
@@ -365,7 +365,7 @@ public class EreignisVerwaltung {
 			
 		} catch (ParseException e) {
 			System.err.println("Fehler beim parsen des Datums!");
-			System.err.println("Fehler ausgelöst durch: '"+oldDatum+"' oder '"+newDatum+"'!");
+			System.err.println("Fehler ausgeloest durch: '"+oldDatum+"' oder '"+newDatum+"'!");
 			System.err.println(e.getMessage());
 		}
 	}
@@ -391,11 +391,11 @@ public class EreignisVerwaltung {
 	
 	/**
 	 * Diese Methode kontrolliert, ob das angegebene Datum (im Format "yyyy-MM-dd HH:mm:ss") nicht
-	 * älter als 30 Tage ist.
+	 * aelter als 30 Tage ist.
 	 * 
 	 * @see Calendar
 	 * @param datum Datum im Format "yyyy-MM-dd HH:mm:ss".
-	 * @return true wenn das angegebene Datum nicht älter als 30 Tage ist
+	 * @return true wenn das angegebene Datum nicht aelter als 30 Tage ist
 	 */
 	private boolean istDatumGueltig(String datum){
 		boolean gueltig = false;
@@ -418,16 +418,16 @@ public class EreignisVerwaltung {
 			}
 		} catch (ParseException e) {
 			System.err.println("Fehler beim parsen des Datums!");
-			System.err.println("Fehler ausgelöst durch: '"+datum+"'");
+			System.err.println("Fehler ausgeloest durch: '"+datum+"'");
 			System.err.println(e.getMessage());
 		}
 		return gueltig;
 	}
 	
 	/**
-	 * Diese Methode löscht alle Zeilen aus der Logdatei, die älter als 30 Tage sind.
+	 * Diese Methode loescht alle Zeilen aus der Logdatei, die aelter als 30 Tage sind.
 	 * Dies realisiert sie indem sie durch die Logdatei geht und die erste Zeile, die
-	 * jünger als 30 Tage ist, der LogPersistenceManager-internen-Methode übergibt.
+	 * juenger als 30 Tage ist, der LogPersistenceManager-internen-Methode uebergibt.
 	 * 
 	 * @see LogPersistenceManager#cleanLogdatei(String)
 	 * @see FileLogPersistenceManager#cleanLogdatei(String)
@@ -438,7 +438,7 @@ public class EreignisVerwaltung {
 		lpm.openForReading(dateiname);
 		String zeile = "";
 		
-		// Suche nach der ersten Zeile die nicht älter als 30 Tage ist
+		// Suche nach der ersten Zeile die nicht aelter als 30 Tage ist
 		while(!(zeile = lpm.ladeEinAuslagerung()).equals("")){
 			String[] tokens = zeile.split(" ");
 			if(istDatumGueltig(tokens[0]+" "+tokens[1])){
@@ -448,7 +448,7 @@ public class EreignisVerwaltung {
 		
 		lpm.close();
 		
-		// Löschen aller Zeilen, die sich vor der gefundenen Zeile befinden
+		// Loeschen aller Zeilen, die sich vor der gefundenen Zeile befinden
 		lpm.cleanLogdatei(zeile, dateiname);
 	}
 	

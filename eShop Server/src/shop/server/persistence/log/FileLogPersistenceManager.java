@@ -91,8 +91,8 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 			File original = new File(dateiname);
 			File tmp = new File(original.getAbsolutePath() + ".tmp");
 
-			// eigenes Bilden von Reader und Writer, da hier File Objekte übergeben werden,
-			// die wir zum Löschen, respkt. umbenennen der Dateien brauchen
+			// eigenes Bilden von Reader und Writer, da hier File Objekte uebergeben werden,
+			// die wir zum Loeschen, respkt. umbenennen der Dateien brauchen
 			reader = new BufferedReader(new FileReader(original));
 			writer = new PrintWriter(new FileWriter(tmp));
 
@@ -103,7 +103,7 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 			while ((str = reader.readLine()) != null && !str.equals(zeile)); 
 
 			if(str != null){
-				// Schreibe den String in die temporäre Datei
+				// Schreibe den String in die temporaere Datei
 				do{
 					writer.println(str);
 					writer.flush();
@@ -112,15 +112,15 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 
 			close();
 
-			//Lösche das Original
+			//Loesche das Original
 			if (!original.delete()) {
-				System.err.println("Löschen des originals fehlgeschlagen!");
+				System.err.println("Loeschen des originals fehlgeschlagen!");
 				return false;
 			}
 
-			//Gib der temporären Datei, den Namen des originals
+			//Gib der temporaeren Datei, den Namen des originals
 			if (!tmp.renameTo(original))
-				System.err.println("Umbenennen der temporären Datei fehlgeschlagen!");
+				System.err.println("Umbenennen der temporaeren Datei fehlgeschlagen!");
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Datei nicht gefunden!");
@@ -146,8 +146,8 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 			File original = new File(dateiname);
 			File tmp = new File(original.getAbsolutePath() + ".tmp");
 
-			// eigenes Bilden von Reader und Writer, da hier File Objekte übergeben werden,
-			// die wir zum Löschen, respkt. umbenennen der Dateien brauchen
+			// eigenes Bilden von Reader und Writer, da hier File Objekte uebergeben werden,
+			// die wir zum Loeschen, respkt. umbenennen der Dateien brauchen
 			reader = new BufferedReader(new FileReader(original));
 			writer = new PrintWriter(new FileWriter(tmp));
 
@@ -157,22 +157,22 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 			// und schreibe nur die Zeilen, die nicht die ID beherbergen
 			while ((str = reader.readLine()) != null){ 
 				if(!str.contains(id)){
-					// Schreibe den String in die temporäre Datei
+					// Schreibe den String in die temporaere Datei
 					writer.println(str);
 					writer.flush();
 				}
 			}
 			close();
 
-			//Lösche das Original
+			//Loesche das Original
 			if (!original.delete()) {
-				System.err.println("Löschen des originals fehlgeschlagen!");
+				System.err.println("Loeschen des originals fehlgeschlagen!");
 				return false;
 			}
 
-			//Gib der temporären Datei, den Namen des originals
+			//Gib der temporaeren Datei, den Namen des originals
 			if (!tmp.renameTo(original))
-				System.err.println("Umbenennen der temporären Datei fehlgeschlagen!");
+				System.err.println("Umbenennen der temporaeren Datei fehlgeschlagen!");
 
 		} catch (FileNotFoundException e) {
 			System.err.println("Datei nicht gefunden!");

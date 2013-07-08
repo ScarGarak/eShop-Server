@@ -97,7 +97,7 @@ public class ShopVerwaltung implements ShopInterface{
 		//kundenNextId = meineKunden.getKundenListe().get(meineKunden.getKundenListe().size()-1).getId() + 1;
 		try {
 			meineKunden.einfuegen(new Kunde(1, "hans", "123", "Hans Meiser", "Blubweg 5", 28201, "Bremen"));
-			meineKunden.einfuegen(new Kunde(2, "bernd", "123", "Bernd", "Siegesstra§e", 30827, "Hannover"));
+			meineKunden.einfuegen(new Kunde(2, "bernd", "123", "Bernd", "Siegesstrasze", 30827, "Hannover"));
 		} catch (KundeExistiertBereitsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -35,12 +35,12 @@ import shop.common.valueobjects.WarenkorbArtikel;
 /**
  * Klasse zur Verarbeitung der Kommunikation zwischen einem Client und dem
  * Server. Die Kommunikation folgt dabei dem "Protokoll" der Anwendung. Das
- * ClientRequestProcessor-Objekt führt folgende Schritte aus: 
- * 0. Begrüßungszeile an den Client senden
+ * ClientRequestProcessor-Objekt fuehrt folgende Schritte aus: 
+ * 0. Begrueszungszeile an den Client senden
  * Danach in einer Sschleife:
- *  1. Empfang einer Zeile vom Client (z.B. Aktionsauswahl, hier eingeschränkt); 
+ *  1. Empfang einer Zeile vom Client (z.B. Aktionsauswahl, hier eingeschraenkt); 
  *     wenn der Client die Abbruchaktion sendet ('q'), wird die Schleife verlassen
- *  2. abhängig von ausgewählter Aktion, Empfang weiterer Zeilen (Parameter für ausgewählte Aktion)
+ *  2. abhaengig von ausgewaehlter Aktion, Empfang weiterer Zeilen (Parameter fuer ausgewaehlte Aktion)
  *  3. Senden der Antwort an den Client; die Antwort besteht je nach Aktion aus einer oder mehr Zeilen
  * 
  * @author Migliosi Angelo, Oliver Thummerer, Christof Ferreira Torres
@@ -59,7 +59,7 @@ class ClientRequestProcessor implements Runnable {
 	private Timer warenkorbLeerenTimer;
 	private TimerTask warenkorbLeerenTimerTask;
 
-	// Datenstrukturen für die Kommunikation
+	// Datenstrukturen fuer die Kommunikation
 	private Socket clientSocket;
 //	private Socket clientUpdateSocket;
 //	private int updatePort;
@@ -104,15 +104,15 @@ class ClientRequestProcessor implements Runnable {
 	}
 
 	/**
-	 * Methode zur Abwicklung der Kommunikation mit dem Client gemäß dem
+	 * Methode zur Abwicklung der Kommunikation mit dem Client gemaesz dem
 	 * vorgebenen Kommunikationsprotokoll.
 	 */
 	public void run() {
 
 		String input = "";
 
-		// Begrüßungsnachricht an den Client senden
-		out.println("Server an Client: Bin bereit für Deine Anfragen!");
+		// Begrueszungsnachricht an den Client senden
+		out.println("Server an Client: Bin bereit fuer Deine Anfragen!");
 
 		// Hauptschleife zur wiederholten Abwicklung der Kommunikation
 		do {
@@ -260,7 +260,7 @@ class ClientRequestProcessor implements Runnable {
 //		try {
 //			// Stream-Objekt fuer Text-Output ueber Client-Socket erzeugen
 //			cout = new PrintStream(activeClients.get(i).getOutputStream());
-//			// Kennzeichen für gewählte Aktion senden
+//			// Kennzeichen fuer gewaehlte Aktion senden
 //			cout.println(aktion);
 //		} catch (IOException e) {
 //			System.err.println("Fehler beim Client-Socket-Stream oeffnen: " + e);
@@ -777,11 +777,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 		int artikelnummer = Integer.parseInt(input);
 		
-		// dann die Stückzahl:
+		// dann die Stueckzahl:
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out.println("--->Fehler beim Lesen vom Client (Stückzahl): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Stueckzahl): ");
 			System.out.println(e.getMessage());
 		}
 		int stueckzahl = Integer.parseInt(input);
@@ -866,11 +866,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 		int artikelnummer = Integer.parseInt(input);
 		
-		// dann die neue Stückzahl:
+		// dann die neue Stueckzahl:
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out.println("--->Fehler beim Lesen vom Client (Neue Stückzahl): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Neue Stueckzahl): ");
 			System.out.println(e.getMessage());
 		}
 		int neueStueckzahl = Integer.parseInt(input);
@@ -1026,7 +1026,7 @@ class ClientRequestProcessor implements Runnable {
 			if (a instanceof Massengutartikel)
 				// Packungsgroesse des Massengutartikels senden
 				out.println(((Massengutartikel) a).getPackungsgroesse());
-			// Stückzahl des Warenkorb Artikels senden
+			// Stueckzahl des Warenkorb Artikels senden
 			out.println(wa.getStueckzahl());
 		}
 	}
@@ -1043,7 +1043,7 @@ class ClientRequestProcessor implements Runnable {
 	/**
 	 * Diese Methode empfaengt eine ID vom Client und sucht nach einem 
 	 * Mitarbeiter mit dieser ID. 
-	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 * Die Kommunikation mit dem Client findet gemaesz dem Protokoll statt.
 	 */
 	private void sucheMitarbeiter(){
 		String input = null;
@@ -1071,7 +1071,7 @@ class ClientRequestProcessor implements Runnable {
 
 	/**
 	 * Diese Methode sendet die Informationen aller Mitarbeiter dem Client.
-	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 * Die Kommunikation mit dem Client findet gemaesz dem Protokoll statt.
 	 * @see ClientRequestProcessor#sendeMitarbeiter(Mitarbeiter)
 	 */
 	private void gibAlleMitarbeiter(){
@@ -1088,7 +1088,7 @@ class ClientRequestProcessor implements Runnable {
 
 	/**
 	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
-	 * fuegt sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * fuegt sie hinzu. Die Kommunikation mit dem Client findet gemaesz dem Protokoll
 	 * statt.
 	 */
 	private void fuegeMitarbeiterHinzu(){
@@ -1140,7 +1140,7 @@ class ClientRequestProcessor implements Runnable {
 	/**
 	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
 	 * fuegt diese in die Mitarbeiter-Instanz ein. Die Kommunikation mit dem Client 
-	 * findet gemaeß dem Protokoll statt.
+	 * findet gemaesz dem Protokoll statt.
 	 */
 	private void mitarbeiterBearbeiten(){
 		try{
@@ -1170,7 +1170,7 @@ class ClientRequestProcessor implements Runnable {
 
 	/**
 	 * Diese Methode empfaengt die ID eines Mitarbeiters vom Client und loescht die zugehoerige 
-	 * Mitarbeiter-Instanz sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * Mitarbeiter-Instanz sie hinzu. Die Kommunikation mit dem Client findet gemaesz dem Protokoll
 	 * statt.
 	 */
 	private void mitarbeiterLoeschen(){
@@ -1276,7 +1276,7 @@ class ClientRequestProcessor implements Runnable {
 	
 	/**
 	 * Diese Methode sendet dem Client alle Informationen von dem angegebenem Mitarbeiter.
-	 * Die Kommunikation findet gemaeß dem Protokoll statt.
+	 * Die Kommunikation findet gemaesz dem Protokoll statt.
 	 */
 	private void sendeMitarbeiter(Mitarbeiter m){
 		out.println(m.getId());
@@ -1307,7 +1307,7 @@ class ClientRequestProcessor implements Runnable {
 	/**
 	 * Diese Methode empfaengt die Artikelnummer eines Artikels vom Client und
 	 * sendet ihm dessen Bestandshistorie zurueck. Die Kommunikation mit dem Client
-	 * findet gemaeß dem Protokoll statt.
+	 * findet gemaesz dem Protokoll statt.
 	 */
 	private void gibBestandsHistorieDaten(){
 		try {
@@ -1328,7 +1328,7 @@ class ClientRequestProcessor implements Runnable {
 	
 	/**
 	 * Diese Methode sendet die Logdatei Zeile pro Zeile zum Client. 
-	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 * Die Kommunikation mit dem Client findet gemaesz dem Protokoll statt.
 	 */
 	private void gibLogDatei(){
 		try {

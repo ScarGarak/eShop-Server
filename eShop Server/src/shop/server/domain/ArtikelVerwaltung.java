@@ -22,19 +22,19 @@ public class ArtikelVerwaltung {
 
 	// Verwaltung des Artikelbestands in einem Vector
 	private List<Artikel> artikelBestand = new Vector<Artikel>();
-	// Persistenz-Schnittstelle, die für die Details des Dateizugriffs verantwortlich ist
+	// Persistenz-Schnittstelle, die fuer die Details des Dateizugriffs verantwortlich ist
 	private DataPersistenceManager pm = new ObjectDataPersistenceManager();
 	
 	/**
 	 * Methode zum Einlesen von Artikeldaten aus einer Datei.
 	 * 
-	 * @param datei Datei die den einzulesenden Artikelbestand enthält.
+	 * @param datei Datei die den einzulesenden Artikelbestand enthaelt.
 	 * @throws IOException
 	 * @throws ArtikelExistiertBereitsException 
 	 * @throws ClassNotFoundException 
 	 */
 	public void liesDaten(String datei) throws IOException {
-		// PersistenzManager für Lesevorgänge öffnen
+		// PersistenzManager fuer Lesevorgaenge oeffnen
 		pm.openForReading(datei);
 
 		Artikel einArtikel;
@@ -42,7 +42,7 @@ public class ArtikelVerwaltung {
 			// Artikel-Objekt einlesen
 			einArtikel = pm.ladeArtikel();
 			if (einArtikel != null) {
-				// Artikel in die Liste einfügen
+				// Artikel in die Liste einfuegen
 				try {
 					einfuegen(einArtikel);
 				} catch (ArtikelExistiertBereitsException e) {
@@ -63,7 +63,7 @@ public class ArtikelVerwaltung {
 	 * @throws IOException
 	 */
 	public synchronized void schreibeDaten(String datei) throws IOException  {
-		// PersistenzManager für Schreibvorgänge öffnen
+		// PersistenzManager fuer Schreibvorgaenge oeffnen
 		pm.openForWriting(datei);
 
 		if (!artikelBestand.isEmpty()) {
@@ -78,7 +78,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode zum einfügen eines Artikels in den Bestand.
+	 * Methode zum einfuegen eines Artikels in den Bestand.
 	 * 
 	 * @param artikel
 	 * @throws ArtikelExistiertBereitsException
@@ -91,7 +91,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode zum verändern des Bestands eines Artikels.
+	 * Methode zum veraendern des Bestands eines Artikels.
 	 * 
 	 * @param artikelnummer
 	 * @param anzahl
@@ -115,7 +115,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode die anhand der Artikelnummer einen Artikel zurückgibt.
+	 * Methode die anhand der Artikelnummer einen Artikel zurueckgibt.
 	 * 
 	 * @param artikelnummer
 	 * @return Artikel
@@ -134,7 +134,7 @@ public class ArtikelVerwaltung {
 	
 	/**
 	 * Methode um Artikel mit einer bestimmten Artikelnummer im Bestand zu suchen. Es wird
-	 * eine Liste von Artikeln zurückgegeben.
+	 * eine Liste von Artikeln zurueckgegeben.
 	 * 
 	 * @param artikelnummer
 	 * @return List<Artikel>
@@ -156,7 +156,7 @@ public class ArtikelVerwaltung {
 	
 	/**
 	 * Methode um Artikel mit einer bestimmten Bezeichnug im Bestand zu suchen. Es wird
-	 * eine Liste von Artikeln zurückgegeben.
+	 * eine Liste von Artikeln zurueckgegeben.
 	 * 
 	 * @param bezeichnung
 	 * @return List<Artikel>
@@ -199,7 +199,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode die den Artikelbestand zurückgibt.
+	 * Methode die den Artikelbestand zurueckgibt.
 	 * 
 	 * @return List<Artikel>
 	 */
@@ -210,7 +210,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode die den Artikelbestand sortiert nach Artikelnummer zurück gibt.
+	 * Methode die den Artikelbestand sortiert nach Artikelnummer zurueck gibt.
 	 * 
 	 * @return List<Artikel>
 	 */
@@ -222,7 +222,7 @@ public class ArtikelVerwaltung {
 	}
 	
 	/**
-	 * Methode die den Artikelbestand sortiert nach Bezeichnung zurück gibt.
+	 * Methode die den Artikelbestand sortiert nach Bezeichnung zurueck gibt.
 	 * 
 	 * @return
 	 */

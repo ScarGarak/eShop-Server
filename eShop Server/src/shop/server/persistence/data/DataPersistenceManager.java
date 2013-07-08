@@ -10,7 +10,7 @@ import shop.common.valueobjects.Mitarbeiter;
  * 
  * @author Oliver Thummerer
  * 
- * Interface für den Zugriff auf ein Speichermedium
+ * Interface fuer den Zugriff auf ein Speichermedium
  * zum Ablegen von Kunden-, Artikel- und Mitarbeiterdaten.
  * 
  * Das Interface muss von Klassen implementiert werden wenn eine
@@ -19,7 +19,7 @@ import shop.common.valueobjects.Mitarbeiter;
 public interface DataPersistenceManager {
 	
 	/**
-	 * Methoden zum öffnen und schließen einer externen Datenquelle
+	 * Methoden zum oeffnen und schlieszen einer externen Datenquelle
 	 * 
 	 * @param datenquelle
 	 * @throws IOException

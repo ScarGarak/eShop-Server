@@ -12,8 +12,8 @@ import shop.server.persistence.data.DataPersistenceManager;
 import shop.server.persistence.data.ObjectDataPersistenceManager;
 
 /**
- * Diese Klasse verwaltet eine Mitarbeiterliste. Sie ermöglicht
- * es Mitarbeiter zu suchen, hinzuzufügen und zu löschen.
+ * Diese Klasse verwaltet eine Mitarbeiterliste. Sie ermoeglicht
+ * es Mitarbeiter zu suchen, hinzuzufuegen und zu loeschen.
  * 
  * @author Angelo
  * 
@@ -70,8 +70,8 @@ public class MitarbeiterVerwaltung {
 	
 	/**
 	 * Diese Methode dient zum einfuegen von Mitarbeitern in die Mitarbeiter-Liste.
-	 * @param m Die Mitarbeiter-Instanz die zur Liste hinzugefügt werden soll.
-	 * @throws MitarbeiterExistiertBereitsException	Wenn die ID der hinzuzufügenden Mitarbeiter-Instanz schon einmal in der Liste existiert. 
+	 * @param m Die Mitarbeiter-Instanz die zur Liste hinzugefuegt werden soll.
+	 * @throws MitarbeiterExistiertBereitsException	Wenn die ID der hinzuzufuegenden Mitarbeiter-Instanz schon einmal in der Liste existiert. 
 	 */
 	public void einfuegen(Mitarbeiter m) throws MitarbeiterExistiertBereitsException{
 		if(!mitarbeiterListe.contains(m)){
@@ -82,8 +82,8 @@ public class MitarbeiterVerwaltung {
 	}
 	
 	/**
-	 * Diese Methode löscht die angegebene Mitarbeiter Instanz aus der Liste.
-	 * @param m Mitarbeiter Instanz zum löschen
+	 * Diese Methode loescht die angegebene Mitarbeiter Instanz aus der Liste.
+	 * @param m Mitarbeiter Instanz zum loeschen
 	 */
 	public void loeschen(Mitarbeiter m){
 		this.mitarbeiterListe.remove(m);
@@ -114,7 +114,7 @@ public class MitarbeiterVerwaltung {
 	}
 	
 	/**
-	 * Diese Methode gibt eine Kopie der aktuellen Mitarbeiterliste zurück.
+	 * Diese Methode gibt eine Kopie der aktuellen Mitarbeiterliste zurueck.
 	 * @return Kopie der Mitarbeiterliste.
 	 */
 	public Vector<Mitarbeiter> getMitarbeiterListe(){
