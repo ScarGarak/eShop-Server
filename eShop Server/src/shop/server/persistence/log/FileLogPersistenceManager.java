@@ -26,14 +26,17 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 	private BufferedReader reader = null;
 	private PrintWriter writer = null;
 	
+	@Override
 	public void openForReading(String datei) throws FileNotFoundException {
 		reader = new BufferedReader(new FileReader(datei));
 	}
 	
+	@Override
 	public void openForWriting(String datei) throws IOException {
 		writer = new PrintWriter(new BufferedWriter(new FileWriter(datei, true)));
 	}
 	
+	@Override
 	public boolean close() {
 		if (writer != null)
 			writer.close();
@@ -48,7 +51,7 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 		return true;
 	}
 	
-
+	@Override
 	public String ladeEinAuslagerung() throws IOException {
 		String zeile = liesZeile();
 		if(zeile == null){
@@ -57,10 +60,12 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 		return zeile;
 	}
 
+	@Override
 	public void speichereEinlagerung(Mitarbeiter m, int anzahl, int artikelnummer, Date datum) throws IOException {
 		schreibeZeile(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datum) + " Mitarbeiter " + m.getId() + " " + anzahl + " Stueck Artikel " + artikelnummer + " eingelagert");
 	}
 	
+	@Override
 	public void speichereAuslagerung(Person p, int anzahl, int artikelnummer, Date datum) throws IOException {
 		String personTyp = p.getPersonTyp()+"";
 		String auslagerungsTyp = "";
@@ -72,6 +77,14 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 		schreibeZeile(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(datum) + " " + personTyp+ " " + p.getId() + " " + anzahl + " Stueck Artikel " + artikelnummer + " "+auslagerungsTyp);
 	}
 	
+	/**
+	 * Diese Methode liest die aktuelle Logdatei ab der angegebenen Zeile und fuegt 
+	 * dann jede Zeile in eine temporaer erstellte Datei.
+	 * Zum Schluss wird die Logdatei geloescht und die temporaere Datei nimmt den Namen
+	 * der Logdatei ein.
+	 * Somit werden alle Eintraege vor der angegebenen Zeile geloescht.
+	 */
+	@Override
 	public boolean cleanLogdatei(String zeile, String dateiname) throws IOException{
 		try {
 
@@ -117,6 +130,16 @@ public class FileLogPersistenceManager implements LogPersistenceManager {
 		return true;
 	}
 	
+	/**
+	 * Diese Methode liest die aktuelle Logdatei und fuegt jede Zeile in eine temporaer
+	 * erstellte Datei. Jede Zeile die die angegebene ID enthaelt wird dabei ignoriert.
+	 * Somit wird ein entferntes Artikel komplett aus der Logdatei entfernt.
+	 * Dies ist notwendig, um die Bestandshistorie eines spaeter hinzugefuegten Artikels,
+	 * mit der gleichen ID, koherent zu halten.
+	 * Zum Schluss wird die Logdatei geloescht und die temporaere Datei nimmt den Namen
+	 * der Logdatei ein.
+	 */
+	@Override
 	public boolean entferneArtikelAusLog(String id, String dateiname) throws IOException {
 		try {
 

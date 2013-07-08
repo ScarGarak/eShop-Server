@@ -38,8 +38,22 @@ public interface LogPersistenceManager {
 	
 	public void speichereAuslagerung(Person p, int anzahl, int artikelnummer, Date datum) throws IOException;
 	
+	/**
+	 * Diese Methode loescht alles in der angegebenen Datei was sich vor der angegebenen Zeile befindet.
+	 * @param zeile Die Zeile ab welcher alles behalten wird. Die Zeile selbst wird auch behalten.
+	 * @param dateiname Der Name der Datei.
+	 * @return true, wenn kein Fehler auftrat
+	 * @throws IOException
+	 */
 	public boolean cleanLogdatei(String zeile, String dateiname) throws IOException;
 	
+	/**
+	 * Diese Methode entfernt alle Eintraege, die die angegebene id enthalten.
+	 * @param id Die id, dessen Eintraege zu entfernen sind
+	 * @param dateiname Der Name der Datei
+	 * @return true, wenn kein Fehler auftrat
+	 * @throws IOException
+	 */
 	public boolean entferneArtikelAusLog(String id, String dateiname) throws IOException;
 	
 }

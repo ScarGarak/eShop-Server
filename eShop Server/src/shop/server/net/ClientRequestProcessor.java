@@ -33,7 +33,7 @@ import shop.common.valueobjects.Rechnung;
 import shop.common.valueobjects.WarenkorbArtikel;
 
 /**
- * Klasse zur Verarbeitung der Kommunikation zwischen EINEM Client und dem
+ * Klasse zur Verarbeitung der Kommunikation zwischen einem Client und dem
  * Server. Die Kommunikation folgt dabei dem "Protokoll" der Anwendung. Das
  * ClientRequestProcessor-Objekt führt folgende Schritte aus: 
  * 0. Begrüßungszeile an den Client senden
@@ -43,11 +43,11 @@ import shop.common.valueobjects.WarenkorbArtikel;
  *  2. abhängig von ausgewählter Aktion, Empfang weiterer Zeilen (Parameter für ausgewählte Aktion)
  *  3. Senden der Antwort an den Client; die Antwort besteht je nach Aktion aus einer oder mehr Zeilen
  * 
- * @author teschke, eirund
+ * @author Migliosi Angelo, Oliver Thummerer, Christof Ferreira Torres
  */
 class ClientRequestProcessor implements Runnable {
 	
-	private static final int WARENKORBLEERENTIMERDELAY = 15000;
+	private static final int WARENKORBLEERENTIMERDELAY = 1000*60*15;
 
 	// Liste mit all den aktiven Clients
 //		private Vector<Socket> activeClients;
@@ -138,21 +138,13 @@ class ClientRequestProcessor implements Runnable {
 				// Einfach behandeln wie ein "quit"
 				input = "q";
 			}
-			else if (input.equals("pl")) {
-				pruefeLogin();
-			}
-
-			// Artikel-Methode 
+			// Artikel-Methoden 
 			else if (input.equals("fae")) {
 				fuegeArtikelEin();
-
-
 			}
 			else if (input.equals("fme")) {
 				fuegeMassengutartikelEin();
-
 			}
-
 			else if (input.equals("abv")) {
 				artikelBestandVeraendern();
 			}
@@ -177,10 +169,6 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("scha")) {
 				schreibeArtikel();
 			}
-			// Kunden-Methoden
-			else if (input.equals("ke")) {
-				fuegeKundenHinzu();
-			} 
 			// Mitarbeiter-Methoden
 			else if (input.equals("mf")) {
 				sucheMitarbeiter();
@@ -200,7 +188,26 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("sm")) {
 				schreibeMitarbeiter();
 			}
-			// Warenkorb
+			// Kunden-Methoden
+			else if (input.equals("ke")) {
+				fuegeKundenHinzu();
+			}
+			else if (input.equals("kb")) {
+				kundenBearbeiten();
+			} 
+			else if (input.equals("sk")) {
+				sucheKunde();
+			}
+			else if (input.equals("gak")) {
+				gibAlleKunden();
+			}
+			else if (input.equals("kl")) {
+				kundenLoeschen();
+			}
+			else if (input.equals("sck")) {
+				schreibeKunden();
+			}
+			// Warenkorb-Methoden
 			else if (input.equals("gw")) {
 				gibWarenkorb();
 			}
@@ -229,22 +236,13 @@ class ClientRequestProcessor implements Runnable {
 			else if (input.equals("gl")) {
 				gibLogDatei();
 			}
-			
+			// Login-Methoden
+			else if (input.equals("pl")) {
+				pruefeLogin();
+			}
 			else if (input.equals("lv")) {
 				loginVergessen();
 			}
-			else if (input.equals("kb")) {
-				kundenBearbeiten();
-			} else if (input.equals("sk")) {
-				sucheKunde();
-			}
-			else if (input.equals("gak")) {
-				gibAlleKunden();
-			}else if (input.equals("kl")) {
-				kundenLoeschen();
-			}else if (input.equals("sck")) {
-				schreibeKunden();
-			} 
 			// ---
 			// weitere Server-Dienste ...
 			// ---
@@ -654,8 +652,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -703,8 +700,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -754,11 +750,10 @@ class ClientRequestProcessor implements Runnable {
 		List<WarenkorbArtikel> warenkorbArtikel = null;
 		try {
 			warenkorbArtikel = shop.gibWarenkorb(shop.sucheKunde(id));
+			sendeWarenkorbArtikelAnClient(warenkorbArtikel);
 		} catch (KundeExistiertNichtException e) {
 			out.println("KundeExistiertNichtException");
 		}
-				
-		sendeWarenkorbArtikelAnClient(warenkorbArtikel);
 	}
 	
 	private void inDenWarenkorbLegen() {
@@ -866,8 +861,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Artikelnummer): ");
 			System.out.println(e.getMessage());
 		}
 		int artikelnummer = Integer.parseInt(input);
@@ -876,8 +870,7 @@ class ClientRequestProcessor implements Runnable {
 		try {
 			input = in.readLine();
 		} catch (Exception e) {
-			System.out
-					.println("--->Fehler beim Lesen vom Client (Neue Stückzahl): ");
+			System.out.println("--->Fehler beim Lesen vom Client (Neue Stückzahl): ");
 			System.out.println(e.getMessage());
 		}
 		int neueStueckzahl = Integer.parseInt(input);
@@ -1047,6 +1040,11 @@ class ClientRequestProcessor implements Runnable {
 	
 	//////// Mitarbeiter ////////
 
+	/**
+	 * Diese Methode empfaengt eine ID vom Client und sucht nach einem 
+	 * Mitarbeiter mit dieser ID. 
+	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 */
 	private void sucheMitarbeiter(){
 		String input = null;
 		Mitarbeiter m = null;
@@ -1071,6 +1069,11 @@ class ClientRequestProcessor implements Runnable {
 
 	}
 
+	/**
+	 * Diese Methode sendet die Informationen aller Mitarbeiter dem Client.
+	 * Die Kommunikation mit dem Client findet gemaeß dem Protokoll statt.
+	 * @see ClientRequestProcessor#sendeMitarbeiter(Mitarbeiter)
+	 */
 	private void gibAlleMitarbeiter(){
 		Vector<Mitarbeiter> mitarbeiterListe = null;
 
@@ -1083,6 +1086,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 
+	/**
+	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
+	 * fuegt sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * statt.
+	 */
 	private void fuegeMitarbeiterHinzu(){
 		try{
 			String username = in.readLine();
@@ -1129,6 +1137,11 @@ class ClientRequestProcessor implements Runnable {
 		}
 	}
 	
+	/**
+	 * Diese Methode empfaengt die Informationen eines Mitarbeiters vom Client und
+	 * fuegt diese in die Mitarbeiter-Instanz ein. Die Kommunikation mit dem Client 
+	 * findet gemaeß dem Protokoll statt.
+	 */
 	private void mitarbeiterBearbeiten(){
 		try{
 			int id = Integer.parseInt(in.readLine());
@@ -1155,6 +1168,11 @@ class ClientRequestProcessor implements Runnable {
 		} 
 	}
 
+	/**
+	 * Diese Methode empfaengt die ID eines Mitarbeiters vom Client und loescht die zugehoerige 
+	 * Mitarbeiter-Instanz sie hinzu. Die Kommunikation mit dem Client findet gemaeß dem Protokoll
+	 * statt.
+	 */
 	private void mitarbeiterLoeschen(){
 		try {
 			int id = Integer.parseInt(in.readLine());

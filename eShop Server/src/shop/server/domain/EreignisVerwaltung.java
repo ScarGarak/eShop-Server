@@ -95,6 +95,17 @@ public class EreignisVerwaltung {
 		return result;
 	}
 	
+	/**
+	 * Diese Methode gibt die Bestandshistorie des angegebenen Artikels als ein Integer Array zurueck.
+	 * 
+	 * Bevor sie dies tut, wird kontrolliert, ob die Bestandshistorie des angegebenen Artikels bereits
+	 * gebildet wurde. Wenn nicht, ruft sie die Methode zum erstellen der Bestandshistorie auf.
+	 * Anschließend iteriert sie durch die Bestandshistorie und fügt alles in einen String.
+	 * @param artikel
+	 * @param dateiname
+	 * @return
+	 * @throws IOException
+	 */
 	public int[] gibBestandsHistorieDaten(Artikel artikel, String dateiname) throws IOException{
 		int artikelID = artikel.getArtikelnummer();
 		if(bestandsHistorieListe == null){
@@ -275,6 +286,18 @@ public class EreignisVerwaltung {
 		rechneBestand(artikel.getArtikelnummer(), bestand);
 	}
 	
+	/**
+	 * Diese Methode fuegt der Bestandshistorie eine Vorgeschichte hinzu, um immer auf
+	 * 30 Eintraege zu kommen.
+	 * Z.B.:
+	 * 		- Wenn ein Artikel erst vor 10 Tagen hinzugefuegt wurde, muss diese Methode
+	 * 		  die 20 vorherigen Tage hinzufuegen, indem sie den Bestand des letzten
+	 * 		  Eintrags nimmt, und diesen fuer diese 20 Tage einsetzt.
+	 * 		- Oder wenn ein Artikel schon laenger existiert und die letzten Veraenderungen
+	 * 		  schon weiter zurueck liegen.
+	 *  
+	 * @param bestandsHistorie
+	 */
 	private void fuegeVorgeschichteHinzu(Vector<String[]> bestandsHistorie){
 		try {
 			Calendar datum = Calendar.getInstance();
@@ -297,6 +320,18 @@ public class EreignisVerwaltung {
 		}
 	}
 	
+	/**
+	 * Diese Methode fuegt die fehlenden Tage zur Bestandshistorie hinzu. 
+	 * 
+	 * Z.B.:
+	 * 		- Wenn ein Artikel vor mehereren Tagen als letzt veraendert wurde, fuegt diese
+	 * 		  Methode die fehlenden Tage bis zum aktuellem Datum hinzu, indem sie fuer
+	 * 		  diese Tage den Bestand von Gestern einsetzt.
+	 * 
+	 * @param bestandsHistorie
+	 * @param oldDatum
+	 * @param newDatum
+	 */
 	private void fehlendeTageHinzufuegen(Vector<String[]> bestandsHistorie, String oldDatum, String newDatum){
 		try {
 			// Gib die Calendar Instanz
@@ -437,6 +472,14 @@ public class EreignisVerwaltung {
 		ereignisListe.add(e);
 	}
 	
+	/**
+	 * Diese Methode liest die Logdatei und gibt Sie komplett in einem String zurueck. Dieser
+	 * String besitzt pro Zeile einen Eintrag.
+	 * 
+	 * @param dateiname Name der Logdatei
+	 * @return Logdatei
+	 * @throws IOException
+	 */
 	public String liesLogDatei(String dateiname) throws IOException{
 		String log = "";		
 		lpm.openForReading(dateiname);
